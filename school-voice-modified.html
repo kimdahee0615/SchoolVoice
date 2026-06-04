@@ -1,831 +1,1539 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>School Voice — 학교 소통 플랫폼</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --navy: #0D1B2A;
-    --navy-mid: #1B2E44;
-    --navy-light: #2A4261;
-    --teal: #0E9E80;
-    --teal-light: #1DB899;
-    --teal-pale: #E0F5F0;
-    --amber: #F5A623;
-    --amber-pale: #FEF3DC;
-    --red: #E63946;
-    --red-pale: #FDEAEA;
-    --cream: #F8F6F1;
-    --white: #FFFFFF;
-    --gray-100: #F2F2F0;
-    --gray-200: #E4E4E0;
-    --gray-400: #9A9A94;
-    --gray-600: #5C5C58;
-    --gray-800: #2C2C2A;
-    --shadow-sm: 0 1px 4px rgba(13,27,42,0.08);
-    --shadow-md: 0 4px 20px rgba(13,27,42,0.12);
-    --shadow-lg: 0 12px 48px rgba(13,27,42,0.18);
-    --r: 12px;
-    --r-sm: 8px;
-    --r-lg: 20px;
-  }
-  html { font-size: 16px; }
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: var(--cream);
-    color: var(--gray-800);
-    min-height: 100vh;
-    line-height: 1.6;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Voice — 학교 소통 플랫폼</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  /* ── SCREENS ── */
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: flex; flex-direction: column; }
+    :root {
+      --navy: #0D1B2A;
+      --navy-mid: #1B2E44;
+      --navy-light: #2A4261;
+      --teal: #0E9E80;
+      --teal-light: #1DB899;
+      --teal-pale: #E0F5F0;
+      --amber: #F5A623;
+      --amber-pale: #FEF3DC;
+      --red: #E63946;
+      --red-pale: #FDEAEA;
+      --cream: #F8F6F1;
+      --white: #FFFFFF;
+      --gray-100: #F2F2F0;
+      --gray-200: #E4E4E0;
+      --gray-400: #9A9A94;
+      --gray-600: #5C5C58;
+      --gray-800: #2C2C2A;
+      --shadow-sm: 0 1px 4px rgba(13, 27, 42, 0.08);
+      --shadow-md: 0 4px 20px rgba(13, 27, 42, 0.12);
+      --shadow-lg: 0 12px 48px rgba(13, 27, 42, 0.18);
+      --r: 12px;
+      --r-sm: 8px;
+      --r-lg: 20px;
+    }
 
-  /* ── LANDING ── */
-  #screen-landing {
-    background: var(--navy);
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-  }
-  #screen-landing::before {
-    content: '';
-    position: absolute;
-    top: -120px; right: -120px;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(14,158,128,0.15) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  #screen-landing::after {
-    content: '';
-    position: absolute;
-    bottom: -80px; left: -80px;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(245,166,35,0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .landing-inner {
-    text-align: center;
-    z-index: 1;
-    padding: 2rem;
-    max-width: 560px;
-    width: 100%;
-  }
-  .logo-mark {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 2.5rem;
-  }
-  .logo-icon {
-    width: 48px; height: 48px;
-    background: var(--teal);
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .logo-icon svg { width: 26px; height: 26px; fill: white; }
-  .logo-text {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: white;
-    letter-spacing: -0.5px;
-  }
-  .logo-text span { color: var(--teal-light); }
-  .landing-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(32px, 5vw, 48px);
-    color: white;
-    line-height: 1.2;
-    margin-bottom: 1rem;
-    letter-spacing: -1px;
-  }
-  .landing-sub {
-    font-size: 15px;
-    color: rgba(255,255,255,0.55);
-    margin-bottom: 3rem;
-    line-height: 1.8;
-  }
-  .role-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 2rem;
-  }
-  .role-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: var(--r-lg);
-    padding: 2rem 1.5rem;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .role-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-  .role-card.teacher::before { background: rgba(14,158,128,0.12); }
-  .role-card.parent::before { background: rgba(245,166,35,0.10); }
-  .role-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.25); }
-  .role-card:hover::before { opacity: 1; }
-  .role-card:active { transform: translateY(0); }
-  .role-icon {
-    width: 60px; height: 60px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 1rem;
-    font-size: 28px;
-  }
-  .role-card.teacher .role-icon { background: rgba(14,158,128,0.2); }
-  .role-card.parent .role-icon { background: rgba(245,166,35,0.15); }
-  .role-label {
-    font-size: 18px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 6px;
-  }
-  .role-desc {
-    font-size: 12px;
-    color: rgba(255,255,255,0.45);
-    line-height: 1.6;
-  }
-  .landing-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(14,158,128,0.15);
-    border: 1px solid rgba(14,158,128,0.3);
-    border-radius: 100px;
-    padding: 6px 14px;
-    font-size: 12px;
-    color: var(--teal-light);
-  }
-  .badge-dot { width: 6px; height: 6px; background: var(--teal-light); border-radius: 50%; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+    html {
+      font-size: 16px;
+    }
 
-  /* ── COMMON NAV ── */
-  .top-nav {
-    background: white;
-    border-bottom: 1px solid var(--gray-200);
-    padding: 0 1.5rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--navy);
-    cursor: pointer;
-  }
-  .nav-logo-dot {
-    width: 28px; height: 28px;
-    background: var(--teal);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .nav-logo-dot svg { width: 16px; height: 16px; fill: white; }
-  .nav-role-badge {
-    font-size: 12px;
-    padding: 4px 12px;
-    border-radius: 100px;
-    font-weight: 500;
-  }
-  .nav-role-badge.teacher { background: var(--teal-pale); color: var(--teal); }
-  .nav-role-badge.parent { background: var(--amber-pale); color: #B07A10; }
-  .nav-actions { display: flex; align-items: center; gap: 8px; }
-  .nav-btn {
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-  }
-  .nav-btn.ghost {
-    background: transparent;
-    color: var(--gray-600);
-  }
-  .nav-btn.ghost:hover { background: var(--gray-100); }
-  .nav-btn.primary {
-    background: var(--teal);
-    color: white;
-  }
-  .nav-btn.primary:hover { background: var(--teal-light); }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--cream);
+      color: var(--gray-800);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
 
-  /* ── TAB BAR ── */
-  .tab-bar {
-    background: white;
-    border-bottom: 1px solid var(--gray-200);
-    padding: 0 1.5rem;
-    display: flex;
-    gap: 0;
-    flex-shrink: 0;
-    overflow-x: auto;
-  }
-  .tab {
-    padding: 14px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--gray-400);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: all 0.2s;
-    font-family: 'Noto Sans KR', sans-serif;
-    background: none;
-    border-left: none; border-right: none; border-top: none;
-  }
-  .tab:hover { color: var(--gray-800); }
-  .tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+    /* ── SCREENS ── */
+    .screen {
+      display: none;
+      min-height: 100vh;
+    }
 
-  /* ── CONTENT AREA ── */
-  .content-area {
-    flex: 1;
-    padding: 1.5rem;
-    max-width: 900px;
-    width: 100%;
-    margin: 0 auto;
-  }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
 
-  /* ── TAB PANELS ── */
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+    /* ── LANDING ── */
+    #screen-landing {
+      background: var(--navy);
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* ── PAGE HEADER ── */
-  .page-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .page-title { font-size: 22px; font-weight: 700; color: var(--navy); }
-  .page-desc { font-size: 14px; color: var(--gray-400); margin-top: 4px; }
+    #screen-landing::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(14, 158, 128, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
 
-  /* ── CARDS ── */
-  .card {
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--r);
-    padding: 1.25rem;
-    margin-bottom: 12px;
-  }
-  .card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 10px;
-  }
-  .card-title { font-size: 15px; font-weight: 600; color: var(--navy); }
-  .card-meta { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
-  .card-body { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
+    #screen-landing::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(245, 166, 35, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
 
-  /* ── BADGES ── */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 10px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  .badge-teal { background: var(--teal-pale); color: var(--teal); }
-  .badge-amber { background: var(--amber-pale); color: #9A6A00; }
-  .badge-red { background: var(--red-pale); color: var(--red); }
-  .badge-gray { background: var(--gray-100); color: var(--gray-600); }
-  .badge-navy { background: rgba(13,27,42,0.08); color: var(--navy); }
-  .badge-purple { background: #F0EEFF; color: #6B3FA0; }
+    .landing-inner {
+      text-align: center;
+      z-index: 1;
+      padding: 2rem;
+      max-width: 560px;
+      width: 100%;
+    }
 
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 18px;
-    border-radius: var(--r-sm);
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'Noto Sans KR', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    text-decoration: none;
-  }
-  .btn-primary { background: var(--teal); color: white; }
-  .btn-primary:hover { background: var(--teal-light); transform: translateY(-1px); }
-  .btn-secondary { background: var(--gray-100); color: var(--gray-800); border: 1px solid var(--gray-200); }
-  .btn-secondary:hover { background: var(--gray-200); }
-  .btn-danger { background: var(--red-pale); color: var(--red); }
-  .btn-danger:hover { background: #fad5d5; }
-  .btn-sm { padding: 6px 12px; font-size: 13px; }
+    .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2.5rem;
+    }
 
-  /* ── FORMS ── */
-  .form-group { margin-bottom: 1.25rem; }
-  .form-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-800);
-    margin-bottom: 6px;
-  }
-  .form-label .required { color: var(--red); margin-left: 3px; }
-  .form-input, .form-select, .form-textarea {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--r-sm);
-    font-size: 14px;
-    font-family: 'Noto Sans KR', sans-serif;
-    color: var(--gray-800);
-    background: white;
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  .form-input:focus, .form-select:focus, .form-textarea:focus {
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(14,158,128,0.1);
-  }
-  .form-textarea { resize: vertical; min-height: 100px; }
-  .form-hint { font-size: 12px; color: var(--gray-400); margin-top: 5px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--teal);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  /* ── CHECKBOX / AGREE ── */
-  .agree-box {
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
-    border-radius: var(--r-sm);
-    padding: 1rem;
-    margin-bottom: 1.25rem;
-  }
-  .agree-box h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--navy); }
-  .agree-box p { font-size: 12px; color: var(--gray-600); line-height: 1.7; }
-  .checkbox-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    cursor: pointer;
-  }
-  .checkbox-row input[type=checkbox] {
-    width: 16px; height: 16px;
-    accent-color: var(--teal);
-    cursor: pointer;
-  }
-  .checkbox-row span { font-size: 13px; color: var(--gray-800); }
+    .logo-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: white;
+    }
 
-  /* ── INFO BANNER ── */
-  .info-banner {
-    display: flex;
-    gap: 10px;
-    padding: 12px 16px;
-    border-radius: var(--r-sm);
-    font-size: 13px;
-    margin-bottom: 1.25rem;
-    align-items: flex-start;
-  }
-  .info-banner.teal { background: var(--teal-pale); color: #0a6e58; border: 1px solid rgba(14,158,128,0.2); }
-  .info-banner.amber { background: var(--amber-pale); color: #7A5500; border: 1px solid rgba(245,166,35,0.3); }
-  .info-banner.red { background: var(--red-pale); color: #9B2020; border: 1px solid rgba(230,57,70,0.2); }
-  .info-banner .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      color: white;
+      letter-spacing: -0.5px;
+    }
 
-  /* ── TIME INDICATOR ── */
-  .time-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .time-indicator.open { background: var(--teal-pale); color: var(--teal); }
-  .time-indicator.closed { background: var(--red-pale); color: var(--red); }
-  .time-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .time-indicator.open .time-dot { background: var(--teal); animation: pulse 2s infinite; }
-  .time-indicator.closed .time-dot { background: var(--red); }
+    .logo-text span {
+      color: var(--teal-light);
+    }
 
-  /* ── STATS GRID ── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 12px;
-    margin-bottom: 1.5rem;
-  }
-  .stat-card {
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--r);
-    padding: 1rem;
-    text-align: center;
-  }
-  .stat-num { font-size: 28px; font-weight: 700; color: var(--navy); line-height: 1.1; }
-  .stat-label { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
-  .stat-card.highlight { border-color: var(--teal); background: var(--teal-pale); }
-  .stat-card.highlight .stat-num { color: var(--teal); }
+    .landing-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
 
-  /* ── CATEGORY CHIPS ── */
-  .category-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 1rem;
-  }
-  .chip {
-    padding: 5px 14px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid var(--gray-200);
-    background: white;
-    color: var(--gray-600);
-    transition: all 0.2s;
-    font-family: 'Noto Sans KR', sans-serif;
-  }
-  .chip:hover { border-color: var(--teal); color: var(--teal); }
-  .chip.active { background: var(--teal); border-color: var(--teal); color: white; }
+    .landing-sub {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.55);
+      margin-bottom: 3rem;
+      line-height: 1.8;
+    }
 
-  /* ── MODAL ── */
-  .modal-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(13,27,42,0.6);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .modal-backdrop.open { display: flex; }
-  .modal {
-    background: white;
-    border-radius: var(--r-lg);
-    padding: 2rem;
-    width: 100%;
-    max-width: 560px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-  }
-  .modal-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--navy);
-    margin-bottom: 0.25rem;
-  }
-  .modal-subtitle { font-size: 13px; color: var(--gray-400); margin-bottom: 1.5rem; }
-  .modal-close {
-    position: absolute;
-    top: 1.25rem; right: 1.25rem;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-    background: var(--gray-100);
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--gray-600);
-    border: none;
-    font-family: sans-serif;
-    line-height: 1;
-  }
-  .modal-close:hover { background: var(--gray-200); }
-  .modal-footer {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--gray-200);
-  }
+    .role-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 2rem;
+    }
 
-  /* ── DIVIDER ── */
-  .divider { border: none; border-top: 1px solid var(--gray-200); margin: 1.25rem 0; }
+    .role-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--r-lg);
+      padding: 2rem 1.5rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* ── FILE UPLOAD ── */
-  .file-upload {
-    border: 2px dashed var(--gray-200);
-    border-radius: var(--r);
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: var(--gray-100);
-  }
-  .file-upload:hover { border-color: var(--teal); background: var(--teal-pale); }
-  .file-upload-icon { font-size: 32px; margin-bottom: 8px; }
-  .file-upload-text { font-size: 14px; color: var(--gray-600); }
-  .file-upload-hint { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+    .role-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
 
-  /* ── CALL BUTTON ── */
-  .call-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--teal);
-    color: white;
-    padding: 14px 20px;
-    border-radius: var(--r);
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    font-family: 'Noto Sans KR', sans-serif;
-    width: 100%;
-    margin-top: 10px;
-  }
-  .call-btn:hover { background: var(--teal-light); transform: translateY(-1px); }
-  .call-btn:disabled { background: var(--gray-400); cursor: not-allowed; transform: none; }
-  .call-btn-icon {
-    width: 40px; height: 40px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .call-btn-info { text-align: left; }
-  .call-btn-label { font-size: 15px; font-weight: 600; }
-  .call-btn-sub { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+    .role-card.teacher::before {
+      background: rgba(14, 158, 128, 0.12);
+    }
 
-  /* ── NOTICE ITEM ── */
-  .notice-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--r);
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .notice-item:hover { border-color: var(--teal); background: var(--teal-pale); }
-  .notice-icon {
-    width: 40px; height: 40px;
-    background: var(--teal-pale);
-    border-radius: var(--r-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .notice-info { flex: 1; min-width: 0; }
-  .notice-title { font-size: 14px; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .notice-meta { font-size: 12px; color: var(--gray-400); margin-top: 3px; }
-  .notice-arrow { color: var(--gray-400); font-size: 18px; }
+    .role-card.parent::before {
+      background: rgba(245, 166, 35, 0.10);
+    }
 
-  /* ── COMPLAINT CARD ── */
-  .complaint-card {
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--r);
-    padding: 1.25rem;
-    margin-bottom: 10px;
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-  .complaint-card:hover { border-color: var(--teal); box-shadow: var(--shadow-sm); }
-  .complaint-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 10px;
-  }
-  .complaint-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .complaint-title { font-size: 15px; font-weight: 600; color: var(--navy); }
-  .complaint-body { font-size: 13px; color: var(--gray-600); line-height: 1.7; margin-bottom: 10px; }
-  .complaint-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-  .complaint-meta-row { display: flex; align-items: center; gap: 10px; }
-  .complaint-meta { font-size: 12px; color: var(--gray-400); }
+    .role-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
 
-  /* ── STATUS BADGE ── */
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 100px;
-  }
-  .status-pending { background: var(--amber-pale); color: #7A5500; }
-  .status-processing { background: #EEF2FF; color: #4F46E5; }
-  .status-done { background: var(--teal-pale); color: var(--teal); }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .status-pending .status-dot { background: var(--amber); }
-  .status-processing .status-dot { background: #4F46E5; }
-  .status-done .status-dot { background: var(--teal); }
+    .role-card:hover::before {
+      opacity: 1;
+    }
 
-  /* ── SECTION TITLE ── */
-  .section-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-400);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 10px;
-    margin-top: 1.5rem;
-  }
-  .section-title:first-child { margin-top: 0; }
+    .role-card:active {
+      transform: translateY(0);
+    }
 
-  /* ── SCROLL ── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+    .role-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 28px;
+    }
 
-  /* ── TEACHER SPECIFIC ── */
-  .category-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 10px;
-    border-radius: var(--r-sm);
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .cat-academic { background: #EEF2FF; color: #4F46E5; }
-  .cat-life { background: #FFF7ED; color: #C2410C; }
-  .cat-safety { background: var(--red-pale); color: var(--red); }
-  .cat-admin { background: var(--gray-100); color: var(--gray-600); }
-  .cat-special { background: #F0FAFB; color: #0E7490; }
-  .cat-violence { background: #FFF1F2; color: #BE123C; }
-  .cat-counseling { background: #F5F3FF; color: #7C3AED; }
+    .role-card.teacher .role-icon {
+      background: rgba(14, 158, 128, 0.2);
+    }
 
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1.5rem;
-    color: var(--gray-400);
-  }
-  .empty-state-icon { font-size: 48px; margin-bottom: 1rem; opacity: 0.5; }
-  .empty-state-title { font-size: 16px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px; }
-  .empty-state-desc { font-size: 14px; }
+    .role-card.parent .role-icon {
+      background: rgba(245, 166, 35, 0.15);
+    }
 
-  /* ── ABSENCE FORM ── */
-  .step-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1.5rem;
-  }
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-  }
-  .step-num {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600;
-  }
-  .step.done .step-num { background: var(--teal); color: white; }
-  .step.current .step-num { background: var(--navy); color: white; }
-  .step.pending .step-num { background: var(--gray-200); color: var(--gray-600); }
-  .step.done .step-label, .step.current .step-label { color: var(--navy); font-weight: 500; }
-  .step.pending .step-label { color: var(--gray-400); }
-  .step-line { flex: 1; height: 1px; background: var(--gray-200); }
-  .step-line.done { background: var(--teal); }
+    .role-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .role-desc {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.6;
+    }
+
+    .landing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(14, 158, 128, 0.15);
+      border: 1px solid rgba(14, 158, 128, 0.3);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 12px;
+      color: var(--teal-light);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--teal-light);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    /* ── COMMON NAV ── */
+    .top-nav {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 1.5rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    .nav-logo-dot {
+      width: 28px;
+      height: 28px;
+      background: var(--teal);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-logo-dot svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .nav-role-badge {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-weight: 500;
+    }
+
+    .nav-role-badge.teacher {
+      background: var(--teal-pale);
+      color: var(--teal);
+    }
+
+    .nav-role-badge.parent {
+      background: var(--amber-pale);
+      color: #B07A10;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .nav-btn.ghost {
+      background: transparent;
+      color: var(--gray-600);
+    }
+
+    .nav-btn.ghost:hover {
+      background: var(--gray-100);
+    }
+
+    .nav-btn.primary {
+      background: var(--teal);
+      color: white;
+    }
+
+    .nav-btn.primary:hover {
+      background: var(--teal-light);
+    }
+
+    /* ── TAB BAR ── */
+    .tab-bar {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 0;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-400);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: none;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+    }
+
+    .tab:hover {
+      color: var(--gray-800);
+    }
+
+    .tab.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+
+    /* ── CONTENT AREA ── */
+    .content-area {
+      flex: 1;
+      padding: 1.5rem;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ── TAB PANELS ── */
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .page-desc {
+      font-size: 14px;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--r);
+      padding: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    .card-body {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.7;
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .badge-teal {
+      background: var(--teal-pale);
+      color: var(--teal);
+    }
+
+    .badge-amber {
+      background: var(--amber-pale);
+      color: #9A6A00;
+    }
+
+    .badge-red {
+      background: var(--red-pale);
+      color: var(--red);
+    }
+
+    .badge-gray {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    .badge-navy {
+      background: rgba(13, 27, 42, 0.08);
+      color: var(--navy);
+    }
+
+    .badge-purple {
+      background: #F0EEFF;
+      color: #6B3FA0;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--teal-light);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-800);
+      border: 1px solid var(--gray-200);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-200);
+    }
+
+    .btn-danger {
+      background: var(--red-pale);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: #fad5d5;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    /* ── FORMS ── */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 6px;
+    }
+
+    .form-label .required {
+      color: var(--red);
+      margin-left: 3px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--gray-800);
+      background: white;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(14, 158, 128, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 5px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* ── CHECKBOX / AGREE ── */
+    .agree-box {
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--r-sm);
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .agree-box h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--navy);
+    }
+
+    .agree-box p {
+      font-size: 12px;
+      color: var(--gray-600);
+      line-height: 1.7;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type=checkbox] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+
+    .checkbox-row span {
+      font-size: 13px;
+      color: var(--gray-800);
+    }
+
+    /* ── INFO BANNER ── */
+    .info-banner {
+      display: flex;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      margin-bottom: 1.25rem;
+      align-items: flex-start;
+    }
+
+    .info-banner.teal {
+      background: var(--teal-pale);
+      color: #0a6e58;
+      border: 1px solid rgba(14, 158, 128, 0.2);
+    }
+
+    .info-banner.amber {
+      background: var(--amber-pale);
+      color: #7A5500;
+      border: 1px solid rgba(245, 166, 35, 0.3);
+    }
+
+    .info-banner.red {
+      background: var(--red-pale);
+      color: #9B2020;
+      border: 1px solid rgba(230, 57, 70, 0.2);
+    }
+
+    .info-banner .icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── TIME INDICATOR ── */
+    .time-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .time-indicator.open {
+      background: var(--teal-pale);
+      color: var(--teal);
+    }
+
+    .time-indicator.closed {
+      background: var(--red-pale);
+      color: var(--red);
+    }
+
+    .time-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .time-indicator.open .time-dot {
+      background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+
+    .time-indicator.closed .time-dot {
+      background: var(--red);
+    }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--r);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    .stat-card.highlight {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+    }
+
+    .stat-card.highlight .stat-num {
+      color: var(--teal);
+    }
+
+    /* ── CATEGORY CHIPS ── */
+    .category-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .chip {
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--gray-200);
+      background: white;
+      color: var(--gray-600);
+      transition: all 0.2s;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .chip:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .chip.active {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: white;
+    }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 27, 42, 0.6);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: var(--r-lg);
+      padding: 2rem;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.25rem;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--gray-100);
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--gray-600);
+      border: none;
+      font-family: sans-serif;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: var(--gray-200);
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--gray-200);
+      margin: 1.25rem 0;
+    }
+
+    /* ── FILE UPLOAD ── */
+    .file-upload {
+      border: 2px dashed var(--gray-200);
+      border-radius: var(--r);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--gray-100);
+    }
+
+    .file-upload:hover {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+    }
+
+    .file-upload-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .file-upload-text {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .file-upload-hint {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    /* ── CALL BUTTON ── */
+    .call-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--teal);
+      color: white;
+      padding: 14px 20px;
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: 'Noto Sans KR', sans-serif;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .call-btn:hover {
+      background: var(--teal-light);
+      transform: translateY(-1px);
+    }
+
+    .call-btn:disabled {
+      background: var(--gray-400);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .call-btn-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .call-btn-info {
+      text-align: left;
+    }
+
+    .call-btn-label {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .call-btn-sub {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    /* ── NOTICE ITEM ── */
+    .notice-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--r);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .notice-item:hover {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+    }
+
+    .notice-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--teal-pale);
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .notice-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notice-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .notice-meta {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 3px;
+    }
+
+    .notice-arrow {
+      color: var(--gray-400);
+      font-size: 18px;
+    }
+
+    /* ── COMPLAINT CARD ── */
+    .complaint-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--r);
+      padding: 1.25rem;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .complaint-card:hover {
+      border-color: var(--teal);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .complaint-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .complaint-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .complaint-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .complaint-body {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .complaint-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .complaint-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .complaint-meta {
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    /* ── STATUS BADGE ── */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    .status-pending {
+      background: var(--amber-pale);
+      color: #7A5500;
+    }
+
+    .status-processing {
+      background: #EEF2FF;
+      color: #4F46E5;
+    }
+
+    .status-done {
+      background: var(--teal-pale);
+      color: var(--teal);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-pending .status-dot {
+      background: var(--amber);
+    }
+
+    .status-processing .status-dot {
+      background: #4F46E5;
+    }
+
+    .status-done .status-dot {
+      background: var(--teal);
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      margin-top: 1.5rem;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    /* ── SCROLL ── */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gray-200);
+      border-radius: 99px;
+    }
+
+    /* ── TEACHER SPECIFIC ── */
+    .category-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--r-sm);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .cat-academic {
+      background: #EEF2FF;
+      color: #4F46E5;
+    }
+
+    .cat-life {
+      background: #FFF7ED;
+      color: #C2410C;
+    }
+
+    .cat-safety {
+      background: var(--red-pale);
+      color: var(--red);
+    }
+
+    .cat-admin {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    .cat-special {
+      background: #F0FAFB;
+      color: #0E7490;
+    }
+
+    .cat-violence {
+      background: #FFF1F2;
+      color: #BE123C;
+    }
+
+    .cat-counseling {
+      background: #F5F3FF;
+      color: #7C3AED;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--gray-400);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 8px;
+    }
+
+    .empty-state-desc {
+      font-size: 14px;
+    }
+
+    /* ── ABSENCE FORM ── */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .step.done .step-num {
+      background: var(--teal);
+      color: white;
+    }
+
+    .step.current .step-num {
+      background: var(--navy);
+      color: white;
+    }
+
+    .step.pending .step-num {
+      background: var(--gray-200);
+      color: var(--gray-600);
+    }
+
+    .step.done .step-label,
+    .step.current .step-label {
+      color: var(--navy);
+      font-weight: 500;
+    }
+
+    .step.pending .step-label {
+      color: var(--gray-400);
+    }
+
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: var(--gray-200);
+    }
+
+    .step-line.done {
+      background: var(--teal);
+    }
 
 
-  .complaint-step-card.locked { opacity: 0.55; pointer-events: none; filter: grayscale(0.2); }
-  .complaint-step-card:not(.active) { display: none; }
-  .tracking-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 12px 0; }
-  .tracking-card { background: var(--gray-100); border-radius: var(--r-sm); padding: 12px; font-size: 13px; }
-  .tracking-label { color: var(--gray-400); font-size: 12px; margin-bottom: 3px; }
+    .complaint-step-card.locked {
+      opacity: 0.55;
+      pointer-events: none;
+      filter: grayscale(0.2);
+    }
 
-  /* Responsive */
-  @media (max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; }
-    .role-cards { grid-template-columns: 1fr; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-  }
-</style>
+    .complaint-step-card:not(.active) {
+      display: none;
+    }
+
+    .tracking-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .tracking-card {
+      background: var(--gray-100);
+      border-radius: var(--r-sm);
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    .tracking-label {
+      color: var(--gray-400);
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .role-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════════════
      LANDING SCREEN
 ══════════════════════════════════════ -->
-<div id="screen-landing" class="screen active">
-  <div class="landing-inner">
-    <div class="logo-mark">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+  <div id="screen-landing" class="screen active">
+    <div class="landing-inner">
+      <div class="logo-mark">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
+          </svg>
+        </div>
+        <div class="logo-text">School<span>Voice</span></div>
       </div>
-      <div class="logo-text">School<span>Voice</span></div>
-    </div>
 
-    <h1 class="landing-title">교사와 학부모를<br>올바르게 연결합니다</h1>
-    <p class="landing-sub">교권을 보호하고 신뢰를 높이는<br>안전한 소통 플랫폼</p>
+      <h1 class="landing-title">교사와 학부모를<br>올바르게 연결합니다</h1>
+      <p class="landing-sub">교권을 보호하고 신뢰를 높이는<br>안전한 소통 플랫폼</p>
 
-    <div class="role-cards">
-      <div class="role-card teacher" onclick="enterRole('teacher')">
-        <div class="role-icon">🧑‍🏫</div>
-        <div class="role-label">선생님</div>
-        <div class="role-desc">민원 관리, 가정통신문<br>업로드, 카테고리 분류</div>
+      <div class="role-cards">
+        <div class="role-card teacher" onclick="enterRole('teacher')">
+          <div class="role-icon">🧑‍🏫</div>
+          <div class="role-label">선생님</div>
+          <div class="role-desc">민원 관리, 가정통신문<br>업로드, 카테고리 분류</div>
+        </div>
+        <div class="role-card parent" onclick="enterRole('parent')">
+          <div class="role-icon">👨‍👩‍👧</div>
+          <div class="role-label">학부모</div>
+          <div class="role-desc">민원·문의 작성, 결석<br>사유서, 가정통신문 확인</div>
+        </div>
       </div>
-      <div class="role-card parent" onclick="enterRole('parent')">
-        <div class="role-icon">👨‍👩‍👧</div>
-        <div class="role-label">학부모</div>
-        <div class="role-desc">민원·문의 작성, 결석<br>사유서, 가정통신문 확인</div>
-      </div>
-    </div>
 
-    <div class="landing-badge">
-      <span class="badge-dot"></span>
-      실명인증 · 안심전화 · 근무시간 연락 보장
+      <div class="landing-badge">
+        <span class="badge-dot"></span>
+        실명인증 · 안심전화 · 근무시간 연락 보장
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════════════
      TEACHER SCREEN
 ══════════════════════════════════════ -->
-<div id="screen-teacher" class="screen">
-  <!-- Nav -->
-  <nav class="top-nav">
-    <div class="nav-logo" onclick="goHome()">
-      <div class="nav-logo-dot">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+  <div id="screen-teacher" class="screen">
+    <!-- Nav -->
+    <nav class="top-nav">
+      <div class="nav-logo" onclick="goHome()">
+        <div class="nav-logo-dot">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
+          </svg>
+        </div>
+        SchoolVoice
       </div>
-      SchoolVoice
+      <div class="nav-actions">
+        <span class="nav-role-badge teacher">🧑‍🏫 교사 모드</span>
+        <button class="nav-btn ghost" onclick="goHome()">나가기</button>
+      </div>
+    </nav>
+
+    <!-- Tabs -->
+    <div class="tab-bar" id="teacher-tabs">
+      <button class="tab active" onclick="switchTab('teacher','dashboard')">대시보드</button>
+      <button class="tab" onclick="switchTab('teacher','complaints')">민원 관리</button>
+      <button class="tab" onclick="switchTab('teacher','notices')">가정통신문</button>
+      <button class="tab" onclick="switchTab('teacher','absences')">결석 사유서</button>
     </div>
-    <div class="nav-actions">
-      <span class="nav-role-badge teacher">🧑‍🏫 교사 모드</span>
-      <button class="nav-btn ghost" onclick="goHome()">나가기</button>
-    </div>
-  </nav>
 
-  <!-- Tabs -->
-  <div class="tab-bar" id="teacher-tabs">
-    <button class="tab active" onclick="switchTab('teacher','dashboard')">대시보드</button>
-    <button class="tab" onclick="switchTab('teacher','complaints')">민원 관리</button>
-    <button class="tab" onclick="switchTab('teacher','notices')">가정통신문</button>
-    <button class="tab" onclick="switchTab('teacher','absences')">결석 사유서</button>
-  </div>
+    <!-- Content -->
+    <div class="content-area">
 
-  <!-- Content -->
-  <div class="content-area">
-
-    <!-- Dashboard -->
-    <div class="tab-panel active" id="teacher-dashboard">
-      <div class="page-header">
-        <div>
-          <div class="page-title">안녕하세요, 김민준 선생님 👋</div>
-          <div class="page-desc">오늘도 안전한 소통으로 교육에 집중하세요</div>
+      <!-- Dashboard -->
+      <div class="tab-panel active" id="teacher-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title">안녕하세요, 김민준 선생님 👋</div>
+            <div class="page-desc">오늘도 안전한 소통으로 교육에 집중하세요</div>
+          </div>
+          <span id="teacher-time-indicator" class="time-indicator open">
+            <span class="time-dot"></span>근무시간 중
+          </span>
         </div>
-        <span id="teacher-time-indicator" class="time-indicator open">
-          <span class="time-dot"></span>근무시간 중
-        </span>
+
+        <div class="stats-grid">
+          <div class="stat-card highlight">
+            <div class="stat-num">3</div>
+            <div class="stat-label">미처리 민원</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">12</div>
+            <div class="stat-label">이번 달 총 민원</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">2</div>
+            <div class="stat-label">새 결석 사유서</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">5</div>
+            <div class="stat-label">등록 가정통신문</div>
+          </div>
+        </div>
+
+        <div class="section-title">최근 접수 민원</div>
+        <div id="teacher-recent-complaints">
+          <div class="complaint-card" onclick="showComplaintDetail('teacher')">
+            <div class="complaint-header">
+              <div>
+                <div class="complaint-title-row">
+                  <span class="complaint-title">수학 시험 성적 관련 문의</span>
+                  <span class="category-tag cat-academic">📚 학업/성적</span>
+                </div>
+                <div class="card-meta">박지수 학부모 · 2025-01-07 10:24</div>
+              </div>
+              <span class="status-badge status-pending"><span class="status-dot"></span>처리 대기</span>
+            </div>
+            <div class="complaint-body">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다. 특히 3번 서술형 문제의 부분 점수 기준이 명확하지 않아...</div>
+            <div class="complaint-footer">
+              <div class="complaint-meta-row">
+                <span class="complaint-meta">📎 첨부 1개</span>
+                <span class="complaint-meta">🔒 실명인증 완료</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openCategoryModal()">카테고리
+                분류</button>
+            </div>
+          </div>
+
+          <div class="complaint-card" onclick="showComplaintDetail('teacher')">
+            <div class="complaint-header">
+              <div>
+                <div class="complaint-title-row">
+                  <span class="complaint-title">급식 알레르기 성분 확인 요청</span>
+                  <span class="category-tag cat-safety">🏥 안전/보건</span>
+                </div>
+                <div class="card-meta">이재원 학부모 · 2025-01-07 09:15</div>
+              </div>
+              <span class="status-badge status-processing"><span class="status-dot"></span>처리 중</span>
+            </div>
+            <div class="complaint-body">아이가 땅콩 알레르기가 있는데 이번 주 급식 메뉴에 해당 성분이 포함되어 있는지 확인 부탁드립니다...</div>
+            <div class="complaint-footer">
+              <div class="complaint-meta-row">
+                <span class="complaint-meta">📎 없음</span>
+                <span class="complaint-meta">🔒 실명인증 완료</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="complaint-card" onclick="showComplaintDetail('teacher')">
+            <div class="complaint-header">
+              <div>
+                <div class="complaint-title-row">
+                  <span class="complaint-title">교우관계 상담 요청</span>
+                  <span class="category-tag cat-counseling">💬 상담요청</span>
+                </div>
+                <div class="card-meta">최수현 학부모 · 2025-01-06 14:50</div>
+              </div>
+              <span class="status-badge status-done"><span class="status-dot"></span>처리 완료</span>
+            </div>
+            <div class="complaint-body">아이가 최근 친구 관계에서 어려움을 겪고 있는 것 같아 선생님과 상담을 요청드립니다...</div>
+            <div class="complaint-footer">
+              <div class="complaint-meta-row">
+                <span class="complaint-meta">📎 없음</span>
+                <span class="complaint-meta">🔒 실명인증 완료</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card highlight">
-          <div class="stat-num">3</div>
-          <div class="stat-label">미처리 민원</div>
+      <!-- Complaints -->
+      <div class="tab-panel" id="teacher-complaints">
+        <div class="page-header">
+          <div>
+            <div class="page-title">민원 관리</div>
+            <div class="page-desc">접수된 모든 민원을 확인하고 카테고리를 분류하세요</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-num">12</div>
-          <div class="stat-label">이번 달 총 민원</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">2</div>
-          <div class="stat-label">새 결석 사유서</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">5</div>
-          <div class="stat-label">등록 가정통신문</div>
-        </div>
-      </div>
 
-      <div class="section-title">최근 접수 민원</div>
-      <div id="teacher-recent-complaints">
+        <div class="category-chips">
+          <button class="chip active" onclick="filterCategory(this,'all')">전체 (12)</button>
+          <button class="chip" onclick="filterCategory(this,'academic')">📚 학업/성적 (3)</button>
+          <button class="chip" onclick="filterCategory(this,'life')">🏃 생활지도 (2)</button>
+          <button class="chip" onclick="filterCategory(this,'safety')">🏥 안전/보건 (2)</button>
+          <button class="chip" onclick="filterCategory(this,'admin')">📋 행정/학교 (2)</button>
+          <button class="chip" onclick="filterCategory(this,'special')">⭐ 특수/개별 (1)</button>
+          <button class="chip" onclick="filterCategory(this,'violence')">🚨 학교폭력 (1)</button>
+          <button class="chip" onclick="filterCategory(this,'counseling')">💬 상담요청 (1)</button>
+        </div>
+
+        <div class="info-banner teal">
+          <span class="icon">🔒</span>
+          <span>모든 민원은 실명인증 후 제출되었으며, 근무시간(오전 9시~오후 6시)에만 접수된 내용입니다.</span>
+        </div>
+
         <div class="complaint-card" onclick="showComplaintDetail('teacher')">
           <div class="complaint-header">
             <div>
@@ -837,13 +1545,14 @@
             </div>
             <span class="status-badge status-pending"><span class="status-dot"></span>처리 대기</span>
           </div>
-          <div class="complaint-body">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다. 특히 3번 서술형 문제의 부분 점수 기준이 명확하지 않아...</div>
+          <div class="complaint-body">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다.</div>
           <div class="complaint-footer">
             <div class="complaint-meta-row">
               <span class="complaint-meta">📎 첨부 1개</span>
               <span class="complaint-meta">🔒 실명인증 완료</span>
             </div>
-            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openCategoryModal()">카테고리 분류</button>
+            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openCategoryModal()">카테고리
+              분류</button>
           </div>
         </div>
 
@@ -858,10 +1567,9 @@
             </div>
             <span class="status-badge status-processing"><span class="status-dot"></span>처리 중</span>
           </div>
-          <div class="complaint-body">아이가 땅콩 알레르기가 있는데 이번 주 급식 메뉴에 해당 성분이 포함되어 있는지 확인 부탁드립니다...</div>
+          <div class="complaint-body">아이가 땅콩 알레르기가 있는데 이번 주 급식 메뉴에 해당 성분이 포함되어 있는지 확인 부탁드립니다.</div>
           <div class="complaint-footer">
             <div class="complaint-meta-row">
-              <span class="complaint-meta">📎 없음</span>
               <span class="complaint-meta">🔒 실명인증 완료</span>
             </div>
           </div>
@@ -871,936 +1579,896 @@
           <div class="complaint-header">
             <div>
               <div class="complaint-title-row">
-                <span class="complaint-title">교우관계 상담 요청</span>
-                <span class="category-tag cat-counseling">💬 상담요청</span>
+                <span class="complaint-title">반 학생 간 다툼 사건 보고 요청</span>
+                <span class="category-tag" style="background:#FFF1F2;color:#BE123C;">🚨 학교폭력</span>
               </div>
-              <div class="card-meta">최수현 학부모 · 2025-01-06 14:50</div>
+              <div class="card-meta">김태윤 학부모 · 2025-01-06 11:20</div>
             </div>
-            <span class="status-badge status-done"><span class="status-dot"></span>처리 완료</span>
+            <span class="status-badge status-processing"><span class="status-dot"></span>처리 중</span>
           </div>
-          <div class="complaint-body">아이가 최근 친구 관계에서 어려움을 겪고 있는 것 같아 선생님과 상담을 요청드립니다...</div>
+          <div class="complaint-body">지난 주 점심시간에 발생한 다툼에 대해 학교의 공식 조치 내용을 알고 싶습니다.</div>
           <div class="complaint-footer">
             <div class="complaint-meta-row">
-              <span class="complaint-meta">📎 없음</span>
+              <span class="complaint-meta">📎 첨부 2개</span>
               <span class="complaint-meta">🔒 실명인증 완료</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Complaints -->
-    <div class="tab-panel" id="teacher-complaints">
-      <div class="page-header">
-        <div>
-          <div class="page-title">민원 관리</div>
-          <div class="page-desc">접수된 모든 민원을 확인하고 카테고리를 분류하세요</div>
+      <!-- Notices -->
+      <div class="tab-panel" id="teacher-notices">
+        <div class="page-header">
+          <div>
+            <div class="page-title">가정통신문 관리</div>
+            <div class="page-desc">가정통신문을 업로드하고 학부모에게 전달하세요</div>
+          </div>
+          <button class="btn btn-primary" onclick="openNoticeUploadModal()">+ 업로드</button>
+        </div>
+
+        <div class="tracking-grid">
+          <div class="tracking-card">
+            <div class="tracking-label">전체 발송</div><strong>5건</strong>
+          </div>
+          <div class="tracking-card">
+            <div class="tracking-label">미확인 학부모</div><strong style="color:var(--red);">7명</strong>
+          </div>
+          <div class="tracking-card">
+            <div class="tracking-label">확인율</div><strong style="color:var(--teal);">82%</strong>
+          </div>
+        </div>
+
+        <div class="notice-item">
+          <div class="notice-icon">📄</div>
+          <div class="notice-info">
+            <div class="notice-title">2025년 1학기 현장학습 안내문</div>
+            <div class="notice-meta">2025-01-06 · PDF · 학부모 32명 확인</div>
+          </div>
+          <span class="badge badge-teal">발송됨</span>
+          <span class="notice-arrow">›</span>
+        </div>
+
+        <div class="notice-item">
+          <div class="notice-icon">📄</div>
+          <div class="notice-info">
+            <div class="notice-title">학교폭력 예방 교육 안내</div>
+            <div class="notice-meta">2025-01-04 · PDF · 학부모 28명 확인</div>
+          </div>
+          <span class="badge badge-teal">발송됨</span>
+          <span class="notice-arrow">›</span>
+        </div>
+
+        <div class="notice-item">
+          <div class="notice-icon">📄</div>
+          <div class="notice-info">
+            <div class="notice-title">2월 학사일정 및 방학 안내</div>
+            <div class="notice-meta">2025-01-02 · PDF · 학부모 15명 확인</div>
+          </div>
+          <span class="badge badge-amber">일부 미확인</span>
+          <span class="notice-arrow">›</span>
+        </div>
+
+        <div class="notice-item">
+          <div class="notice-icon">📄</div>
+          <div class="notice-info">
+            <div class="notice-title">영양 교육 신청 안내</div>
+            <div class="notice-meta">초안 · 아직 미발송</div>
+          </div>
+          <span class="badge badge-gray">초안</span>
+          <span class="notice-arrow">›</span>
         </div>
       </div>
 
-      <div class="category-chips">
-        <button class="chip active" onclick="filterCategory(this,'all')">전체 (12)</button>
-        <button class="chip" onclick="filterCategory(this,'academic')">📚 학업/성적 (3)</button>
-        <button class="chip" onclick="filterCategory(this,'life')">🏃 생활지도 (2)</button>
-        <button class="chip" onclick="filterCategory(this,'safety')">🏥 안전/보건 (2)</button>
-        <button class="chip" onclick="filterCategory(this,'admin')">📋 행정/학교 (2)</button>
-        <button class="chip" onclick="filterCategory(this,'special')">⭐ 특수/개별 (1)</button>
-        <button class="chip" onclick="filterCategory(this,'violence')">🚨 학교폭력 (1)</button>
-        <button class="chip" onclick="filterCategory(this,'counseling')">💬 상담요청 (1)</button>
-      </div>
-
-      <div class="info-banner teal">
-        <span class="icon">🔒</span>
-        <span>모든 민원은 실명인증 후 제출되었으며, 근무시간(오전 9시~오후 6시)에만 접수된 내용입니다.</span>
-      </div>
-
-      <div class="complaint-card" onclick="showComplaintDetail('teacher')">
-        <div class="complaint-header">
+      <!-- Absences -->
+      <div class="tab-panel" id="teacher-absences">
+        <div class="page-header">
           <div>
-            <div class="complaint-title-row">
-              <span class="complaint-title">수학 시험 성적 관련 문의</span>
-              <span class="category-tag cat-academic">📚 학업/성적</span>
+            <div class="page-title">결석 사유서</div>
+            <div class="page-desc">학부모가 제출한 결석 사유서를 확인하세요</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">박서현 · 3학년 2반</div>
+              <div class="card-meta">제출일: 2025-01-07 08:30</div>
             </div>
-            <div class="card-meta">박지수 학부모 · 2025-01-07 10:24</div>
-          </div>
-          <span class="status-badge status-pending"><span class="status-dot"></span>처리 대기</span>
-        </div>
-        <div class="complaint-body">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다.</div>
-        <div class="complaint-footer">
-          <div class="complaint-meta-row">
-            <span class="complaint-meta">📎 첨부 1개</span>
-            <span class="complaint-meta">🔒 실명인증 완료</span>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openCategoryModal()">카테고리 분류</button>
-        </div>
-      </div>
-
-      <div class="complaint-card" onclick="showComplaintDetail('teacher')">
-        <div class="complaint-header">
-          <div>
-            <div class="complaint-title-row">
-              <span class="complaint-title">급식 알레르기 성분 확인 요청</span>
-              <span class="category-tag cat-safety">🏥 안전/보건</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span class="badge badge-amber">검토 대기</span>
             </div>
-            <div class="card-meta">이재원 학부모 · 2025-01-07 09:15</div>
           </div>
-          <span class="status-badge status-processing"><span class="status-dot"></span>처리 중</span>
-        </div>
-        <div class="complaint-body">아이가 땅콩 알레르기가 있는데 이번 주 급식 메뉴에 해당 성분이 포함되어 있는지 확인 부탁드립니다.</div>
-        <div class="complaint-footer">
-          <div class="complaint-meta-row">
-            <span class="complaint-meta">🔒 실명인증 완료</span>
+          <div
+            style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:var(--gray-600);margin-bottom:12px;">
+            <div><span style="color:var(--gray-400);font-size:12px;">결석 날짜</span><br><strong
+                style="color:var(--navy);">2025-01-08</strong></div>
+            <div><span style="color:var(--gray-400);font-size:12px;">사유 유형</span><br><strong
+                style="color:var(--navy);">병결 (질병)</strong></div>
+            <div style="grid-column:1/-1;"><span style="color:var(--gray-400);font-size:12px;">세부 사유</span><br><strong
+                style="color:var(--navy);">독감 증상으로 병원 진료 예정. 진단서 첨부.</strong></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm">✓ 승인</button>
+            <button class="btn btn-secondary btn-sm">📎 첨부 확인</button>
+            <button class="btn btn-danger btn-sm">반려</button>
           </div>
         </div>
-      </div>
 
-      <div class="complaint-card" onclick="showComplaintDetail('teacher')">
-        <div class="complaint-header">
-          <div>
-            <div class="complaint-title-row">
-              <span class="complaint-title">반 학생 간 다툼 사건 보고 요청</span>
-              <span class="category-tag" style="background:#FFF1F2;color:#BE123C;">🚨 학교폭력</span>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">김민호 · 3학년 2반</div>
+              <div class="card-meta">제출일: 2025-01-06 17:45</div>
             </div>
-            <div class="card-meta">김태윤 학부모 · 2025-01-06 11:20</div>
+            <span class="badge badge-teal">승인 완료</span>
           </div>
-          <span class="status-badge status-processing"><span class="status-dot"></span>처리 중</span>
-        </div>
-        <div class="complaint-body">지난 주 점심시간에 발생한 다툼에 대해 학교의 공식 조치 내용을 알고 싶습니다.</div>
-        <div class="complaint-footer">
-          <div class="complaint-meta-row">
-            <span class="complaint-meta">📎 첨부 2개</span>
-            <span class="complaint-meta">🔒 실명인증 완료</span>
+          <div
+            style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:var(--gray-600);margin-bottom:8px;">
+            <div><span style="color:var(--gray-400);font-size:12px;">결석 날짜</span><br><strong
+                style="color:var(--navy);">2025-01-07</strong></div>
+            <div><span style="color:var(--gray-400);font-size:12px;">사유 유형</span><br><strong
+                style="color:var(--navy);">가정 사정</strong></div>
           </div>
         </div>
       </div>
+
     </div>
-
-    <!-- Notices -->
-    <div class="tab-panel" id="teacher-notices">
-      <div class="page-header">
-        <div>
-          <div class="page-title">가정통신문 관리</div>
-          <div class="page-desc">가정통신문을 업로드하고 학부모에게 전달하세요</div>
-        </div>
-        <button class="btn btn-primary" onclick="openNoticeUploadModal()">+ 업로드</button>
-      </div>
-
-      <div class="tracking-grid">
-        <div class="tracking-card"><div class="tracking-label">전체 발송</div><strong>5건</strong></div>
-        <div class="tracking-card"><div class="tracking-label">미확인 학부모</div><strong style="color:var(--red);">7명</strong></div>
-        <div class="tracking-card"><div class="tracking-label">확인율</div><strong style="color:var(--teal);">82%</strong></div>
-      </div>
-
-      <div class="notice-item">
-        <div class="notice-icon">📄</div>
-        <div class="notice-info">
-          <div class="notice-title">2025년 1학기 현장학습 안내문</div>
-          <div class="notice-meta">2025-01-06 · PDF · 학부모 32명 확인</div>
-        </div>
-        <span class="badge badge-teal">발송됨</span>
-        <span class="notice-arrow">›</span>
-      </div>
-
-      <div class="notice-item">
-        <div class="notice-icon">📄</div>
-        <div class="notice-info">
-          <div class="notice-title">학교폭력 예방 교육 안내</div>
-          <div class="notice-meta">2025-01-04 · PDF · 학부모 28명 확인</div>
-        </div>
-        <span class="badge badge-teal">발송됨</span>
-        <span class="notice-arrow">›</span>
-      </div>
-
-      <div class="notice-item">
-        <div class="notice-icon">📄</div>
-        <div class="notice-info">
-          <div class="notice-title">2월 학사일정 및 방학 안내</div>
-          <div class="notice-meta">2025-01-02 · PDF · 학부모 15명 확인</div>
-        </div>
-        <span class="badge badge-amber">일부 미확인</span>
-        <span class="notice-arrow">›</span>
-      </div>
-
-      <div class="notice-item">
-        <div class="notice-icon">📄</div>
-        <div class="notice-info">
-          <div class="notice-title">영양 교육 신청 안내</div>
-          <div class="notice-meta">초안 · 아직 미발송</div>
-        </div>
-        <span class="badge badge-gray">초안</span>
-        <span class="notice-arrow">›</span>
-      </div>
-    </div>
-
-    <!-- Absences -->
-    <div class="tab-panel" id="teacher-absences">
-      <div class="page-header">
-        <div>
-          <div class="page-title">결석 사유서</div>
-          <div class="page-desc">학부모가 제출한 결석 사유서를 확인하세요</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">박서현 · 3학년 2반</div>
-            <div class="card-meta">제출일: 2025-01-07 08:30</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span class="badge badge-amber">검토 대기</span>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:var(--gray-600);margin-bottom:12px;">
-          <div><span style="color:var(--gray-400);font-size:12px;">결석 날짜</span><br><strong style="color:var(--navy);">2025-01-08</strong></div>
-          <div><span style="color:var(--gray-400);font-size:12px;">사유 유형</span><br><strong style="color:var(--navy);">병결 (질병)</strong></div>
-          <div style="grid-column:1/-1;"><span style="color:var(--gray-400);font-size:12px;">세부 사유</span><br><strong style="color:var(--navy);">독감 증상으로 병원 진료 예정. 진단서 첨부.</strong></div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary btn-sm">✓ 승인</button>
-          <button class="btn btn-secondary btn-sm">📎 첨부 확인</button>
-          <button class="btn btn-danger btn-sm">반려</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">김민호 · 3학년 2반</div>
-            <div class="card-meta">제출일: 2025-01-06 17:45</div>
-          </div>
-          <span class="badge badge-teal">승인 완료</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:var(--gray-600);margin-bottom:8px;">
-          <div><span style="color:var(--gray-400);font-size:12px;">결석 날짜</span><br><strong style="color:var(--navy);">2025-01-07</strong></div>
-          <div><span style="color:var(--gray-400);font-size:12px;">사유 유형</span><br><strong style="color:var(--navy);">가정 사정</strong></div>
-        </div>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════════════
      PARENT SCREEN
 ══════════════════════════════════════ -->
-<div id="screen-parent" class="screen">
-  <!-- Nav -->
-  <nav class="top-nav">
-    <div class="nav-logo" onclick="goHome()">
-      <div class="nav-logo-dot">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+  <div id="screen-parent" class="screen">
+    <!-- Nav -->
+    <nav class="top-nav">
+      <div class="nav-logo" onclick="goHome()">
+        <div class="nav-logo-dot">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
+          </svg>
+        </div>
+        SchoolVoice
       </div>
-      SchoolVoice
-    </div>
-    <div class="nav-actions">
-      <span class="nav-role-badge parent">👨‍👩‍👧 학부모 모드</span>
-      <button class="nav-btn ghost" onclick="goHome()">나가기</button>
-    </div>
-  </nav>
-
-  <!-- Tabs -->
-  <div class="tab-bar" id="parent-tabs">
-    <button class="tab active" onclick="switchTab('parent','home')">홈</button>
-    <button class="tab" onclick="switchTab('parent','complaint')">민원·문의</button>
-    <button class="tab" onclick="switchTab('parent','absence')">결석 사유서</button>
-    <button class="tab" onclick="switchTab('parent','notices')">가정통신문</button>
-    <button class="tab" onclick="switchTab('parent','call')">안심전화</button>
-  </div>
-
-  <!-- Content -->
-  <div class="content-area">
-
-    <!-- Home -->
-    <div class="tab-panel active" id="parent-home">
-      <div class="page-header">
-        <div>
-          <div class="page-title">안녕하세요, 박지수 학부모님 👋</div>
-          <div class="page-desc">박서연 학생 · 3학년 2반 · 담임 김민준 선생님</div>
-        </div>
-        <span id="parent-time-indicator" class="time-indicator open">
-          <span class="time-dot"></span>연락 가능
-        </span>
+      <div class="nav-actions">
+        <span class="nav-role-badge parent">👨‍👩‍👧 학부모 모드</span>
+        <button class="nav-btn ghost" onclick="goHome()">나가기</button>
       </div>
+    </nav>
 
-      <div class="info-banner amber">
-        <span class="icon">⏰</span>
-        <span>교사 연락은 <strong>평일 오전 9시 ~ 오후 6시</strong>에만 가능합니다. 이 외 시간에는 접수가 제한됩니다.</span>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-num">2</div>
-          <div class="stat-label">진행 중 민원</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">1</div>
-          <div class="stat-label">미확인 통신문</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">0</div>
-          <div class="stat-label">대기 중 결석신청</div>
-        </div>
-      </div>
-
-      <div class="section-title">빠른 메뉴</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;">
-        <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;" onclick="switchTab('parent','complaint')">
-          <div style="font-size:28px;margin-bottom:8px;">📝</div>
-          <div style="font-size:14px;font-weight:600;color:var(--navy);">민원·문의 작성</div>
-          <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">실명인증 후 제출</div>
-        </div>
-        <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;" onclick="switchTab('parent','absence')">
-          <div style="font-size:28px;margin-bottom:8px;">📋</div>
-          <div style="font-size:14px;font-weight:600;color:var(--navy);">결석 사유서</div>
-          <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">온라인 제출</div>
-        </div>
-        <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;" onclick="switchTab('parent','notices')">
-          <div style="font-size:28px;margin-bottom:8px;">📄</div>
-          <div style="font-size:14px;font-weight:600;color:var(--navy);">가정통신문</div>
-          <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">미확인 1개</div>
-        </div>
-        <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;" onclick="switchTab('parent','call')">
-          <div style="font-size:28px;margin-bottom:8px;">📞</div>
-          <div style="font-size:14px;font-weight:600;color:var(--navy);">안심전화</div>
-          <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">앱 내 통화</div>
-        </div>
-      </div>
-
-      <div class="section-title">최근 민원 현황</div>
-      <div class="complaint-card">
-        <div class="complaint-header">
-          <div>
-            <div class="complaint-title">수학 시험 성적 관련 문의</div>
-            <div class="card-meta">2025-01-07 10:24 접수</div>
-          </div>
-          <span class="status-badge status-pending"><span class="status-dot"></span>처리 대기</span>
-        </div>
-        <div class="complaint-body">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다.</div>
-      </div>
+    <!-- Tabs -->
+    <div class="tab-bar" id="parent-tabs">
+      <button class="tab active" onclick="switchTab('parent','home')">홈</button>
+      <button class="tab" onclick="switchTab('parent','complaint')">민원·문의</button>
+      <button class="tab" onclick="switchTab('parent','absence')">결석 사유서</button>
+      <button class="tab" onclick="switchTab('parent','notices')">가정통신문</button>
+      <button class="tab" onclick="switchTab('parent','call')">안심전화</button>
     </div>
 
-    <!-- Complaint Form -->
-    <div class="tab-panel" id="parent-complaint">
-      <div class="page-header">
-        <div>
-          <div class="page-title">민원·문의 작성</div>
-          <div class="page-desc">실명인증 → 내용 작성/근거 첨부 → 책임 동의 순서로만 제출됩니다</div>
-        </div>
-      </div>
+    <!-- Content -->
+    <div class="content-area">
 
-      <div id="complaint-time-warning" class="info-banner amber" style="display:none;">
-        <span class="icon">⚠️</span>
-        <span>현재 <strong>근무시간(오전 9시~오후 6시)</strong>이 아닙니다. 근무시간 외 민원 접수는 자동 차단됩니다.</span>
-      </div>
-
-      <div class="info-banner teal">
-        <span class="icon">ℹ️</span>
-        <span>프로토타입 예시입니다. 민원은 반드시 <strong>3단계 순서</strong>를 통과해야 하며, 이전 단계 완료 전 다음 단계 입력이 비활성화됩니다.</span>
-      </div>
-
-      <div class="step-indicator">
-        <div class="step current" id="complaint-step-indicator-1"><span class="step-num">1</span><span class="step-label">실명인증</span></div>
-        <div class="step-line" id="complaint-step-line-1"></div>
-        <div class="step pending" id="complaint-step-indicator-2"><span class="step-num">2</span><span class="step-label">내용/근거</span></div>
-        <div class="step-line" id="complaint-step-line-2"></div>
-        <div class="step pending" id="complaint-step-indicator-3"><span class="step-num">3</span><span class="step-label">책임동의</span></div>
-      </div>
-
-      <div class="card complaint-step-card active" id="complaint-step-1">
-        <div class="card-header">
+      <!-- Home -->
+      <div class="tab-panel active" id="parent-home">
+        <div class="page-header">
           <div>
-            <div class="card-title">1단계. 실명인증 확인</div>
-            <div class="card-meta">학부모 본인과 학생 정보가 확인되어야 민원 작성이 가능합니다.</div>
+            <div class="page-title">안녕하세요, 박지수 학부모님 👋</div>
+            <div class="page-desc">박서연 학생 · 3학년 2반 · 담임 김민준 선생님</div>
           </div>
-          <span class="badge badge-teal">예시 인증 완료</span>
+          <span id="parent-time-indicator" class="time-indicator open">
+            <span class="time-dot"></span>연락 가능
+          </span>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;background:var(--gray-100);border-radius:var(--r-sm);padding:12px;margin-bottom:1rem;">
-          <div><span style="color:var(--gray-400);">학부모명</span><br><strong>박지수</strong></div>
-          <div><span style="color:var(--gray-400);">휴대폰</span><br><strong>010-****-5678</strong></div>
-          <div><span style="color:var(--gray-400);">학생명</span><br><strong>박서연</strong></div>
-          <div><span style="color:var(--gray-400);">학반</span><br><strong>3학년 2반</strong></div>
+
+        <div class="info-banner amber">
+          <span class="icon">⏰</span>
+          <span>교사 연락은 <strong>평일 오전 9시 ~ 오후 6시</strong>에만 가능합니다. 이 외 시간에는 접수가 제한됩니다.</span>
         </div>
-        <button class="btn btn-primary" onclick="goComplaintStep(2)">인증 확인 후 다음</button>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num">2</div>
+            <div class="stat-label">진행 중 민원</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">1</div>
+            <div class="stat-label">미확인 통신문</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">0</div>
+            <div class="stat-label">대기 중 결석신청</div>
+          </div>
+        </div>
+
+        <div class="section-title">빠른 메뉴</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;">
+          <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;"
+            onclick="switchTab('parent','complaint')">
+            <div style="font-size:28px;margin-bottom:8px;">📝</div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">민원·문의 작성</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">실명인증 후 제출</div>
+          </div>
+          <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;"
+            onclick="switchTab('parent','absence')">
+            <div style="font-size:28px;margin-bottom:8px;">📋</div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">결석 사유서</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">온라인 제출</div>
+          </div>
+          <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;"
+            onclick="switchTab('parent','notices')">
+            <div style="font-size:28px;margin-bottom:8px;">📄</div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">가정통신문</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">미확인 1개</div>
+          </div>
+          <div class="card" style="cursor:pointer;text-align:center;padding:1.25rem 1rem;"
+            onclick="switchTab('parent','call')">
+            <div style="font-size:28px;margin-bottom:8px;">📞</div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">안심전화</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">앱 내 통화</div>
+          </div>
+        </div>
+
+        <div class="section-title">최근 민원 현황</div>
+        <div class="complaint-card">
+          <div class="complaint-header">
+            <div>
+              <div class="complaint-title">수학 시험 성적 관련 문의</div>
+              <div class="card-meta">2025-01-07 10:24 접수</div>
+            </div>
+            <span class="status-badge status-pending"><span class="status-dot"></span>처리 대기</span>
+          </div>
+          <div class="complaint-body">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다.</div>
+        </div>
       </div>
 
-      <div class="card complaint-step-card locked" id="complaint-step-2">
-        <div class="card-header">
+      <!-- Complaint Form -->
+      <div class="tab-panel" id="parent-complaint">
+        <div class="page-header">
           <div>
-            <div class="card-title">2단계. 내용 작성 + 근거 첨부</div>
-            <div class="card-meta">민원 유형과 사실관계, 첨부 자료를 입력합니다.</div>
-          </div>
-          <span class="badge badge-gray">1단계 완료 후 작성</span>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">민원 유형 <span class="required">*</span></label>
-          <select class="form-select" id="complaint-type">
-            <option value="">유형을 선택하세요</option>
-            <option>📚 학업/성적</option>
-            <option>🏃 생활지도</option>
-            <option>🏥 안전/보건</option>
-            <option>📋 행정/학교</option>
-            <option>⭐ 특수/개별</option>
-            <option>🚨 학교폭력</option>
-            <option>💬 상담 요청</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">제목 <span class="required">*</span></label>
-          <input type="text" class="form-input" id="complaint-title-input" value="수학 시험 성적 관련 문의">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">내용 <span class="required">*</span></label>
-          <textarea class="form-textarea" id="complaint-body-input" rows="5">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다. 특히 3번 서술형 문제의 부분 점수 기준을 알고 싶습니다.</textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">근거 자료 첨부 <span class="required">*</span></label>
-          <div class="file-upload" onclick="document.getElementById('file-input').click()">
-            <input type="file" id="file-input" style="display:none" multiple onchange="markFileAttached('complaint-file-label','시험지_사진.jpg 첨부됨')">
-            <div class="file-upload-icon">📎</div>
-            <div class="file-upload-text" id="complaint-file-label">예시 파일: 시험지_사진.jpg</div>
-            <div class="file-upload-hint">JPG, PNG, PDF, DOC · 최대 10MB · 최대 3개</div>
+            <div class="page-title">민원·문의 작성</div>
+            <div class="page-desc">실명인증 → 내용 작성/근거 첨부 → 책임 동의 순서로만 제출됩니다</div>
           </div>
         </div>
-        <div style="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;">
-          <button class="btn btn-secondary" onclick="goComplaintStep(1)">이전</button>
-          <button class="btn btn-primary" onclick="validateComplaintContent()">내용 확인 후 다음</button>
-        </div>
-      </div>
 
-      <div class="card complaint-step-card locked" id="complaint-step-3">
-        <div class="card-header">
-          <div>
-            <div class="card-title">3단계. 책임 동의</div>
-            <div class="card-meta">허위 민원 방지를 위한 필수 동의 단계입니다.</div>
+        <div id="complaint-time-warning" class="info-banner amber" style="display:none;">
+          <span class="icon">⚠️</span>
+          <span>현재 <strong>근무시간(오전 9시~오후 6시)</strong>이 아닙니다. 근무시간 외 민원 접수는 자동 차단됩니다.</span>
+        </div>
+
+        <div class="info-banner teal">
+          <span class="icon">ℹ️</span>
+          <span>프로토타입 예시입니다. 민원은 반드시 <strong>3단계 순서</strong>를 통과해야 하며, 이전 단계 완료 전 다음 단계 입력이 비활성화됩니다.</span>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step current" id="complaint-step-indicator-1"><span class="step-num">1</span><span
+              class="step-label">실명인증</span></div>
+          <div class="step-line" id="complaint-step-line-1"></div>
+          <div class="step pending" id="complaint-step-indicator-2"><span class="step-num">2</span><span
+              class="step-label">내용/근거</span></div>
+          <div class="step-line" id="complaint-step-line-2"></div>
+          <div class="step pending" id="complaint-step-indicator-3"><span class="step-num">3</span><span
+              class="step-label">책임동의</span></div>
+        </div>
+
+        <div class="card complaint-step-card active" id="complaint-step-1">
+          <div class="card-header">
+            <div>
+              <div class="card-title">1단계. 실명인증 확인</div>
+              <div class="card-meta">학부모 본인과 학생 정보가 확인되어야 민원 작성이 가능합니다.</div>
+            </div>
+            <span class="badge badge-teal">예시 인증 완료</span>
           </div>
-          <span class="badge badge-gray">2단계 완료 후 동의</span>
-        </div>
-        <div class="agree-box">
-          <h4>📜 민원 제출 책임 고지</h4>
-          <p>본 민원은 실명으로 접수되며 교사 및 학교 측에 공개됩니다. 사실에 근거하지 않은 허위 민원, 명예훼손성 표현, 반복적 괴롭힘성 민원은 관련 법령에 따라 책임이 발생할 수 있습니다.</p>
-          <label class="checkbox-row"><input type="checkbox" id="agree1"><span>허위 민원에 대한 법적 책임을 인지하고 동의합니다.</span></label>
-          <label class="checkbox-row"><input type="checkbox" id="agree2"><span>제출한 민원 내용이 사실에 기반함을 확인합니다.</span></label>
-          <label class="checkbox-row"><input type="checkbox" id="agree3"><span>개인정보 수집 및 이용에 동의합니다.</span></label>
-        </div>
-        <div style="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;">
-          <button class="btn btn-secondary" onclick="goComplaintStep(2)">이전</button>
-          <button class="btn btn-primary" onclick="submitComplaint()">민원 제출하기</button>
-        </div>
-      </div>
-
-      <div class="section-title">내 민원 이력</div>
-      <div class="complaint-card">
-        <div class="complaint-header"><div><div class="complaint-title">급식 알레르기 성분 확인 요청</div><div class="card-meta">2025-01-06 접수</div></div><span class="status-badge status-processing"><span class="status-dot"></span>처리 중</span></div>
-        <div class="complaint-body">담임 확인 후 영양교사에게 전달되었습니다.</div>
-      </div>
-    </div>
-
-    <!-- Absence Form -->
-    <div class="tab-panel" id="parent-absence">
-      <div class="page-header">
-        <div>
-          <div class="page-title">결석 사유서 제출</div>
-          <div class="page-desc">결석 당일 오전 9시 이전까지 제출해 주세요</div>
-        </div>
-      </div>
-
-      <div class="info-banner teal">
-        <span class="icon">📌</span>
-        <span>결석 당일 오전 9시 이전에 제출하면 교사가 즉시 확인할 수 있습니다. 사전 제출을 권장합니다.</span>
-      </div>
-
-      <div class="card">
-        <div class="form-group">
-          <label class="form-label">학생 정보</label>
-          <div style="background:var(--gray-100);border-radius:var(--r-sm);padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">
+          <div
+            style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;background:var(--gray-100);border-radius:var(--r-sm);padding:12px;margin-bottom:1rem;">
+            <div><span style="color:var(--gray-400);">학부모명</span><br><strong>박지수</strong></div>
+            <div><span style="color:var(--gray-400);">휴대폰</span><br><strong>010-****-5678</strong></div>
             <div><span style="color:var(--gray-400);">학생명</span><br><strong>박서연</strong></div>
             <div><span style="color:var(--gray-400);">학반</span><br><strong>3학년 2반</strong></div>
           </div>
+          <button class="btn btn-primary" onclick="goComplaintStep(2)">인증 확인 후 다음</button>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">결석 날짜 <span class="required">*</span></label>
-            <input type="date" class="form-input">
+        <div class="card complaint-step-card locked" id="complaint-step-2">
+          <div class="card-header">
+            <div>
+              <div class="card-title">2단계. 내용 작성 + 근거 첨부</div>
+              <div class="card-meta">민원 유형과 사실관계, 첨부 자료를 입력합니다.</div>
+            </div>
+            <span class="badge badge-gray">1단계 완료 후 작성</span>
           </div>
+
           <div class="form-group">
-            <label class="form-label">결석 유형 <span class="required">*</span></label>
-            <select class="form-select">
-              <option value="">선택</option>
-              <option>병결 (질병)</option>
-              <option>병결 (사고)</option>
-              <option>가정 사정</option>
-              <option>기타 인정 결석</option>
+            <label class="form-label">민원 유형 <span class="required">*</span></label>
+            <select class="form-select" id="complaint-type">
+              <option value="">유형을 선택하세요</option>
+              <option>📚 학업/성적</option>
+              <option>🏃 생활지도</option>
+              <option>🏥 안전/보건</option>
+              <option>📋 행정/학교</option>
+              <option>⭐ 특수/개별</option>
+              <option>🚨 학교폭력</option>
+              <option>💬 상담 요청</option>
             </select>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="form-label">세부 사유 <span class="required">*</span></label>
-          <textarea class="form-textarea" rows="4" placeholder="구체적인 결석 사유를 작성해 주세요"></textarea>
-        </div>
+          <div class="form-group">
+            <label class="form-label">제목 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="complaint-title-input" value="수학 시험 성적 관련 문의">
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">증빙 서류 첨부</label>
-          <div class="file-upload" onclick="document.getElementById('abs-file').click()">
-            <input type="file" id="abs-file" style="display:none">
-            <div class="file-upload-icon">📎</div>
-            <div class="file-upload-text">진단서, 소견서 등 첨부</div>
-            <div class="file-upload-hint">병결의 경우 의사 소견서가 필요합니다</div>
+          <div class="form-group">
+            <label class="form-label">내용 <span class="required">*</span></label>
+            <textarea class="form-textarea" id="complaint-body-input"
+              rows="5">지난 기말고사 수학 점수에 대해 세부 채점 기준을 확인하고 싶습니다. 특히 3번 서술형 문제의 부분 점수 기준을 알고 싶습니다.</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">근거 자료 첨부 <span class="required">*</span></label>
+            <div class="file-upload" onclick="document.getElementById('file-input').click()">
+              <input type="file" id="file-input" style="display:none" multiple
+                onchange="markFileAttached('complaint-file-label','시험지_사진.jpg 첨부됨')">
+              <div class="file-upload-icon">📎</div>
+              <div class="file-upload-text" id="complaint-file-label">예시 파일: 시험지_사진.jpg</div>
+              <div class="file-upload-hint">JPG, PNG, PDF, DOC · 최대 10MB · 최대 3개</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="goComplaintStep(1)">이전</button>
+            <button class="btn btn-primary" onclick="validateComplaintContent()">내용 확인 후 다음</button>
           </div>
         </div>
 
-        <label class="checkbox-row" style="margin-bottom:1.25rem;">
-          <input type="checkbox" id="abs-agree">
-          <span style="font-size:13px;">위 결석 사유가 사실임을 확인하고 제출합니다.</span>
-        </label>
+        <div class="card complaint-step-card locked" id="complaint-step-3">
+          <div class="card-header">
+            <div>
+              <div class="card-title">3단계. 책임 동의</div>
+              <div class="card-meta">허위 민원 방지를 위한 필수 동의 단계입니다.</div>
+            </div>
+            <span class="badge badge-gray">2단계 완료 후 동의</span>
+          </div>
+          <div class="agree-box">
+            <h4>📜 민원 제출 책임 고지</h4>
+            <p>본 민원은 실명으로 접수되며 교사 및 학교 측에 공개됩니다. 사실에 근거하지 않은 허위 민원, 명예훼손성 표현, 반복적 괴롭힘성 민원은 관련 법령에 따라 책임이 발생할 수 있습니다.</p>
+            <label class="checkbox-row"><input type="checkbox" id="agree1"><span>허위 민원에 대한 법적 책임을 인지하고
+                동의합니다.</span></label>
+            <label class="checkbox-row"><input type="checkbox" id="agree2"><span>제출한 민원 내용이 사실에 기반함을
+                확인합니다.</span></label>
+            <label class="checkbox-row"><input type="checkbox" id="agree3"><span>개인정보 수집 및 이용에 동의합니다.</span></label>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="goComplaintStep(2)">이전</button>
+            <button class="btn btn-primary" onclick="submitComplaint()">민원 제출하기</button>
+          </div>
+        </div>
 
-        <div style="display:flex;gap:10px;justify-content:flex-end;">
-          <button class="btn btn-secondary">임시저장</button>
-          <button class="btn btn-primary" onclick="submitAbsence()">사유서 제출</button>
+        <div class="section-title">내 민원 이력</div>
+        <div class="complaint-card">
+          <div class="complaint-header">
+            <div>
+              <div class="complaint-title">급식 알레르기 성분 확인 요청</div>
+              <div class="card-meta">2025-01-06 접수</div>
+            </div><span class="status-badge status-processing"><span class="status-dot"></span>처리 중</span>
+          </div>
+          <div class="complaint-body">담임 확인 후 영양교사에게 전달되었습니다.</div>
         </div>
       </div>
 
-      <div class="section-title" style="margin-top:1.5rem;">제출 이력</div>
-      <div class="card">
-        <div class="card-header">
+      <!-- Absence Form -->
+      <div class="tab-panel" id="parent-absence">
+        <div class="page-header">
           <div>
-            <div class="card-title">2025-01-02 병결 (질병)</div>
-            <div class="card-meta">제출일: 2025-01-02 08:20</div>
+            <div class="page-title">결석 사유서 제출</div>
+            <div class="page-desc">결석 당일 오전 9시 이전까지 제출해 주세요</div>
           </div>
-          <span class="badge badge-teal">승인 완료</span>
         </div>
-        <div style="font-size:13px;color:var(--gray-600);">독감으로 인한 결석 — 진단서 첨부</div>
+
+        <div class="info-banner teal">
+          <span class="icon">📌</span>
+          <span>결석 당일 오전 9시 이전에 제출하면 교사가 즉시 확인할 수 있습니다. 사전 제출을 권장합니다.</span>
+        </div>
+
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label">학생 정보</label>
+            <div
+              style="background:var(--gray-100);border-radius:var(--r-sm);padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">
+              <div><span style="color:var(--gray-400);">학생명</span><br><strong>박서연</strong></div>
+              <div><span style="color:var(--gray-400);">학반</span><br><strong>3학년 2반</strong></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">결석 날짜 <span class="required">*</span></label>
+              <input type="date" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">결석 유형 <span class="required">*</span></label>
+              <select class="form-select">
+                <option value="">선택</option>
+                <option>병결 (질병)</option>
+                <option>병결 (사고)</option>
+                <option>가정 사정</option>
+                <option>기타 인정 결석</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">세부 사유 <span class="required">*</span></label>
+            <textarea class="form-textarea" rows="4" placeholder="구체적인 결석 사유를 작성해 주세요"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">증빙 서류 첨부</label>
+            <div class="file-upload" onclick="document.getElementById('abs-file').click()">
+              <input type="file" id="abs-file" style="display:none">
+              <div class="file-upload-icon">📎</div>
+              <div class="file-upload-text">진단서, 소견서 등 첨부</div>
+              <div class="file-upload-hint">병결의 경우 의사 소견서가 필요합니다</div>
+            </div>
+          </div>
+
+          <label class="checkbox-row" style="margin-bottom:1.25rem;">
+            <input type="checkbox" id="abs-agree">
+            <span style="font-size:13px;">위 결석 사유가 사실임을 확인하고 제출합니다.</span>
+          </label>
+
+          <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button class="btn btn-secondary">임시저장</button>
+            <button class="btn btn-primary" onclick="submitAbsence()">사유서 제출</button>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:1.5rem;">제출 이력</div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">2025-01-02 병결 (질병)</div>
+              <div class="card-meta">제출일: 2025-01-02 08:20</div>
+            </div>
+            <span class="badge badge-teal">승인 완료</span>
+          </div>
+          <div style="font-size:13px;color:var(--gray-600);">독감으로 인한 결석 — 진단서 첨부</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">2024-12-18 가정 사정</div>
+              <div class="card-meta">제출일: 2024-12-17 21:12</div>
+            </div>
+            <span class="badge badge-red">반려</span>
+          </div>
+          <div style="font-size:13px;color:var(--gray-600);">사유 불충분 — 세부 사유 보완 요청</div>
+        </div>
+
       </div>
-      <div class="card">
-        <div class="card-header">
+
+      <!-- Parent Notices -->
+      <div class="tab-panel" id="parent-notices">
+        <div class="page-header">
           <div>
-            <div class="card-title">2024-12-18 가정 사정</div>
-            <div class="card-meta">제출일: 2024-12-17 21:12</div>
+            <div class="page-title">가정통신문</div>
+            <div class="page-desc">담임 선생님이 발송한 가정통신문을 확인하세요</div>
           </div>
-          <span class="badge badge-red">반려</span>
         </div>
-        <div style="font-size:13px;color:var(--gray-600);">사유 불충분 — 세부 사유 보완 요청</div>
+
+        <div class="notice-item" style="border-color:var(--teal);background:var(--teal-pale);">
+          <div class="notice-icon">📄</div>
+          <div class="notice-info">
+            <div class="notice-title">2025년 1학기 현장학습 안내문</div>
+            <div class="notice-meta">2025-01-06 · 미확인</div>
+          </div>
+          <span class="badge badge-red">새 문서</span>
+          <span class="notice-arrow" style="color:var(--teal);">›</span>
+        </div>
+
+        <div class="notice-item">
+          <div class="notice-icon">📄</div>
+          <div class="notice-info">
+            <div class="notice-title">학교폭력 예방 교육 안내</div>
+            <div class="notice-meta">2025-01-04 · 확인됨</div>
+          </div>
+          <span class="badge badge-gray">확인됨</span>
+          <span class="notice-arrow">›</span>
+        </div>
+
+        <div class="notice-item">
+          <div class="notice-icon">📄</div>
+          <div class="notice-info">
+            <div class="notice-title">2월 학사일정 및 방학 안내</div>
+            <div class="notice-meta">2025-01-02 · 확인됨</div>
+          </div>
+          <span class="badge badge-gray">확인됨</span>
+          <span class="notice-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Call -->
+      <div class="tab-panel" id="parent-call">
+        <div class="page-header">
+          <div>
+            <div class="page-title">안심전화</div>
+            <div class="page-desc">개인 번호 없이 앱 내에서만 통화합니다</div>
+          </div>
+        </div>
+
+        <div class="info-banner red">
+          <span class="icon">🚫</span>
+          <span>교사의 <strong>개인 연락처로의 직접 연락은 금지</strong>됩니다. 모든 통화는 앱 내 안심전화를 통해서만 가능합니다.</span>
+        </div>
+
+        <div class="info-banner amber">
+          <span class="icon">⏰</span>
+          <span>안심전화는 <strong>평일 오전 9시 ~ 오후 6시</strong>에만 연결 가능합니다. 긴급 상황은 학교 대표 번호로 연락하세요.</span>
+        </div>
+
+        <div class="card" style="margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+            <div
+              style="width:48px;height:48px;background:var(--teal-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;">
+              🧑‍🏫</div>
+            <div>
+              <div style="font-size:16px;font-weight:700;color:var(--navy);">김민준 선생님</div>
+              <div style="font-size:13px;color:var(--gray-400);">3학년 2반 담임 · 수학 담당</div>
+            </div>
+          </div>
+
+          <div
+            style="background:var(--gray-100);border-radius:var(--r-sm);padding:12px;font-size:13px;color:var(--gray-600);margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span>📞</span>
+              <span>안심번호: <strong style="color:var(--navy);">050-XXXX-XXXX</strong></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span>🕐</span>
+              <span>통화 가능: <strong style="color:var(--navy);">평일 09:00 ~ 18:00</strong></span>
+            </div>
+          </div>
+
+          <button class="call-btn" id="call-btn-main" onclick="initiateCall()">
+            <div class="call-btn-icon">📞</div>
+            <div class="call-btn-info">
+              <div class="call-btn-label">안심전화 연결</div>
+              <div class="call-btn-sub">개인번호 비공개 · 녹음 안내 후 연결</div>
+            </div>
+          </button>
+        </div>
+
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;">안심전화 이용 안내</div>
+          <div style="font-size:13px;color:var(--gray-600);line-height:1.9;">
+            ✅ 교사와 학부모의 <strong>개인 번호가 서로 비공개</strong>됩니다<br>
+            ✅ 통화는 <strong>앱에서만 가능</strong>하며, 외부 번호로의 전달은 차단됩니다<br>
+            ✅ 통화 연결 전 <strong>녹음 안내 멘트</strong>가 재생됩니다<br>
+            ✅ 통화 이력은 <strong>앱 내에서만 확인</strong> 가능합니다<br>
+            ⛔ 근무시간 외 통화 시도 시 <strong>자동 차단</strong>됩니다
+          </div>
+        </div>
       </div>
 
     </div>
-
-    <!-- Parent Notices -->
-    <div class="tab-panel" id="parent-notices">
-      <div class="page-header">
-        <div>
-          <div class="page-title">가정통신문</div>
-          <div class="page-desc">담임 선생님이 발송한 가정통신문을 확인하세요</div>
-        </div>
-      </div>
-
-      <div class="notice-item" style="border-color:var(--teal);background:var(--teal-pale);">
-        <div class="notice-icon">📄</div>
-        <div class="notice-info">
-          <div class="notice-title">2025년 1학기 현장학습 안내문</div>
-          <div class="notice-meta">2025-01-06 · 미확인</div>
-        </div>
-        <span class="badge badge-red">새 문서</span>
-        <span class="notice-arrow" style="color:var(--teal);">›</span>
-      </div>
-
-      <div class="notice-item">
-        <div class="notice-icon">📄</div>
-        <div class="notice-info">
-          <div class="notice-title">학교폭력 예방 교육 안내</div>
-          <div class="notice-meta">2025-01-04 · 확인됨</div>
-        </div>
-        <span class="badge badge-gray">확인됨</span>
-        <span class="notice-arrow">›</span>
-      </div>
-
-      <div class="notice-item">
-        <div class="notice-icon">📄</div>
-        <div class="notice-info">
-          <div class="notice-title">2월 학사일정 및 방학 안내</div>
-          <div class="notice-meta">2025-01-02 · 확인됨</div>
-        </div>
-        <span class="badge badge-gray">확인됨</span>
-        <span class="notice-arrow">›</span>
-      </div>
-    </div>
-
-    <!-- Call -->
-    <div class="tab-panel" id="parent-call">
-      <div class="page-header">
-        <div>
-          <div class="page-title">안심전화</div>
-          <div class="page-desc">개인 번호 없이 앱 내에서만 통화합니다</div>
-        </div>
-      </div>
-
-      <div class="info-banner red">
-        <span class="icon">🚫</span>
-        <span>교사의 <strong>개인 연락처로의 직접 연락은 금지</strong>됩니다. 모든 통화는 앱 내 안심전화를 통해서만 가능합니다.</span>
-      </div>
-
-      <div class="info-banner amber">
-        <span class="icon">⏰</span>
-        <span>안심전화는 <strong>평일 오전 9시 ~ 오후 6시</strong>에만 연결 가능합니다. 긴급 상황은 학교 대표 번호로 연락하세요.</span>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
-          <div style="width:48px;height:48px;background:var(--teal-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;">🧑‍🏫</div>
-          <div>
-            <div style="font-size:16px;font-weight:700;color:var(--navy);">김민준 선생님</div>
-            <div style="font-size:13px;color:var(--gray-400);">3학년 2반 담임 · 수학 담당</div>
-          </div>
-        </div>
-
-        <div style="background:var(--gray-100);border-radius:var(--r-sm);padding:12px;font-size:13px;color:var(--gray-600);margin-bottom:12px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span>📞</span>
-            <span>안심번호: <strong style="color:var(--navy);">050-XXXX-XXXX</strong></span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span>🕐</span>
-            <span>통화 가능: <strong style="color:var(--navy);">평일 09:00 ~ 18:00</strong></span>
-          </div>
-        </div>
-
-        <button class="call-btn" id="call-btn-main" onclick="initiateCall()">
-          <div class="call-btn-icon">📞</div>
-          <div class="call-btn-info">
-            <div class="call-btn-label">안심전화 연결</div>
-            <div class="call-btn-sub">개인번호 비공개 · 녹음 안내 후 연결</div>
-          </div>
-        </button>
-      </div>
-
-      <div class="card">
-        <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;">안심전화 이용 안내</div>
-        <div style="font-size:13px;color:var(--gray-600);line-height:1.9;">
-          ✅ 교사와 학부모의 <strong>개인 번호가 서로 비공개</strong>됩니다<br>
-          ✅ 통화는 <strong>앱에서만 가능</strong>하며, 외부 번호로의 전달은 차단됩니다<br>
-          ✅ 통화 연결 전 <strong>녹음 안내 멘트</strong>가 재생됩니다<br>
-          ✅ 통화 이력은 <strong>앱 내에서만 확인</strong> 가능합니다<br>
-          ⛔ 근무시간 외 통화 시도 시 <strong>자동 차단</strong>됩니다
-        </div>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════════════
      MODALS
 ══════════════════════════════════════ -->
 
-<!-- Category Modal -->
-<div class="modal-backdrop" id="modal-category">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-category')">×</button>
-    <div class="modal-title">민원 카테고리 분류</div>
-    <div class="modal-subtitle">수학 시험 성적 관련 문의 · 박지수 학부모</div>
+  <!-- Category Modal -->
+  <div class="modal-backdrop" id="modal-category">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-category')">×</button>
+      <div class="modal-title">민원 카테고리 분류</div>
+      <div class="modal-subtitle">수학 시험 성적 관련 문의 · 박지수 학부모</div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;">
-      <div class="category-select-item" data-cat="academic" onclick="selectCategory(this)">
-        <div style="font-size:24px;margin-bottom:6px;">📚</div>
-        <div style="font-size:13px;font-weight:600;color:var(--navy);">학업/성적</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;">
+        <div class="category-select-item" data-cat="academic" onclick="selectCategory(this)">
+          <div style="font-size:24px;margin-bottom:6px;">📚</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">학업/성적</div>
+        </div>
+        <div class="category-select-item" data-cat="life" onclick="selectCategory(this)">
+          <div style="font-size:24px;margin-bottom:6px;">🏃</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">생활지도</div>
+        </div>
+        <div class="category-select-item" data-cat="safety" onclick="selectCategory(this)">
+          <div style="font-size:24px;margin-bottom:6px;">🏥</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">안전/보건</div>
+        </div>
+        <div class="category-select-item" data-cat="admin" onclick="selectCategory(this)">
+          <div style="font-size:24px;margin-bottom:6px;">📋</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">행정/학교</div>
+        </div>
+        <div class="category-select-item" data-cat="special" onclick="selectCategory(this)">
+          <div style="font-size:24px;margin-bottom:6px;">⭐</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">특수/개별</div>
+        </div>
+        <div class="category-select-item" data-cat="violence" onclick="selectCategory(this)">
+          <div style="font-size:24px;margin-bottom:6px;">🚨</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">학교폭력</div>
+        </div>
+        <div class="category-select-item selected" data-cat="counseling" onclick="selectCategory(this)">
+          <div style="font-size:24px;margin-bottom:6px;">💬</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">상담요청</div>
+        </div>
       </div>
-      <div class="category-select-item" data-cat="life" onclick="selectCategory(this)">
-        <div style="font-size:24px;margin-bottom:6px;">🏃</div>
-        <div style="font-size:13px;font-weight:600;color:var(--navy);">생활지도</div>
-      </div>
-      <div class="category-select-item" data-cat="safety" onclick="selectCategory(this)">
-        <div style="font-size:24px;margin-bottom:6px;">🏥</div>
-        <div style="font-size:13px;font-weight:600;color:var(--navy);">안전/보건</div>
-      </div>
-      <div class="category-select-item" data-cat="admin" onclick="selectCategory(this)">
-        <div style="font-size:24px;margin-bottom:6px;">📋</div>
-        <div style="font-size:13px;font-weight:600;color:var(--navy);">행정/학교</div>
-      </div>
-      <div class="category-select-item" data-cat="special" onclick="selectCategory(this)">
-        <div style="font-size:24px;margin-bottom:6px;">⭐</div>
-        <div style="font-size:13px;font-weight:600;color:var(--navy);">특수/개별</div>
-      </div>
-      <div class="category-select-item" data-cat="violence" onclick="selectCategory(this)">
-        <div style="font-size:24px;margin-bottom:6px;">🚨</div>
-        <div style="font-size:13px;font-weight:600;color:var(--navy);">학교폭력</div>
-      </div>
-      <div class="category-select-item selected" data-cat="counseling" onclick="selectCategory(this)">
-        <div style="font-size:24px;margin-bottom:6px;">💬</div>
-        <div style="font-size:13px;font-weight:600;color:var(--navy);">상담요청</div>
-      </div>
-    </div>
 
-    <div class="form-group">
-      <label class="form-label">담당자 메모 (선택)</label>
-      <textarea class="form-textarea" rows="3" placeholder="내부 처리 메모를 입력하세요 (학부모에게 표시되지 않음)"></textarea>
-    </div>
+      <div class="form-group">
+        <label class="form-label">담당자 메모 (선택)</label>
+        <textarea class="form-textarea" rows="3" placeholder="내부 처리 메모를 입력하세요 (학부모에게 표시되지 않음)"></textarea>
+      </div>
 
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-category')">취소</button>
-      <button class="btn btn-primary" onclick="saveCategory()">분류 저장</button>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-category')">취소</button>
+        <button class="btn btn-primary" onclick="saveCategory()">분류 저장</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Notice Upload Modal -->
-<div class="modal-backdrop" id="modal-notice-upload">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-notice-upload')">×</button>
-    <div class="modal-title">가정통신문 업로드</div>
-    <div class="modal-subtitle">학부모에게 발송할 가정통신문을 업로드하세요</div>
+  <!-- Notice Upload Modal -->
+  <div class="modal-backdrop" id="modal-notice-upload">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-notice-upload')">×</button>
+      <div class="modal-title">가정통신문 업로드</div>
+      <div class="modal-subtitle">학부모에게 발송할 가정통신문을 업로드하세요</div>
 
-    <div class="form-group">
-      <label class="form-label">제목 <span class="required">*</span></label>
-      <input type="text" class="form-input" placeholder="예: 2025년 2학기 수업 계획 안내">
-    </div>
-
-    <div class="form-row">
       <div class="form-group">
-        <label class="form-label">대상 학년</label>
-        <select class="form-select">
-          <option>전체 학년</option>
-          <option>1학년</option>
-          <option>2학년</option>
-          <option>3학년</option>
-        </select>
+        <label class="form-label">제목 <span class="required">*</span></label>
+        <input type="text" class="form-input" placeholder="예: 2025년 2학기 수업 계획 안내">
       </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">대상 학년</label>
+          <select class="form-select">
+            <option>전체 학년</option>
+            <option>1학년</option>
+            <option>2학년</option>
+            <option>3학년</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">회신 기한</label>
+          <input type="date" class="form-input">
+        </div>
+      </div>
+
       <div class="form-group">
-        <label class="form-label">회신 기한</label>
-        <input type="date" class="form-input">
+        <label class="form-label">파일 업로드 <span class="required">*</span></label>
+        <div class="file-upload">
+          <div class="file-upload-icon">📄</div>
+          <div class="file-upload-text">PDF, HWP, DOC 파일 업로드</div>
+          <div class="file-upload-hint">최대 20MB</div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label class="form-label">파일 업로드 <span class="required">*</span></label>
-      <div class="file-upload">
-        <div class="file-upload-icon">📄</div>
-        <div class="file-upload-text">PDF, HWP, DOC 파일 업로드</div>
-        <div class="file-upload-hint">최대 20MB</div>
+      <div class="form-group">
+        <label class="form-label">안내 메시지 (선택)</label>
+        <textarea class="form-textarea" rows="3" placeholder="학부모에게 전달할 간단한 안내 메시지"></textarea>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label class="form-label">안내 메시지 (선택)</label>
-      <textarea class="form-textarea" rows="3" placeholder="학부모에게 전달할 간단한 안내 메시지"></textarea>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-notice-upload')">취소</button>
-      <button class="btn btn-secondary">임시저장</button>
-      <button class="btn btn-primary" onclick="uploadNotice()">발송하기</button>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-notice-upload')">취소</button>
+        <button class="btn btn-secondary">임시저장</button>
+        <button class="btn btn-primary" onclick="uploadNotice()">발송하기</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Success Toast -->
-<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:white;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:500;opacity:0;transition:all 0.3s ease;z-index:999;white-space:nowrap;pointer-events:none;"></div>
+  <!-- Success Toast -->
+  <div id="toast"
+    style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:white;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:500;opacity:0;transition:all 0.3s ease;z-index:999;white-space:nowrap;pointer-events:none;">
+  </div>
 
-<style>
-  .category-select-item {
-    background: var(--gray-100);
-    border: 2px solid var(--gray-200);
-    border-radius: var(--r);
-    padding: 14px 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-  .category-select-item:hover { border-color: var(--teal); background: var(--teal-pale); }
-  .category-select-item.selected { border-color: var(--teal); background: var(--teal-pale); }
-</style>
+  <style>
+    .category-select-item {
+      background: var(--gray-100);
+      border: 2px solid var(--gray-200);
+      border-radius: var(--r);
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
 
-<script>
-  // ── State
-  let currentRole = null;
-  let isWorkingHours = true;
+      .category-select-item:hover {
+        border-color: var(--teal);
+        background: var(--teal-pale);
+      }
 
-  function checkWorkingHours() {
-    const now = new Date();
-    const h = now.getHours();
-    const d = now.getDay();
-    isWorkingHours = d >= 1 && d <= 5 && h >= 9 && h < 18;
+      .category-select-item.selected {
+        border-color: var(--teal);
+        background: var(--teal-pale);
+      }
+  </style>
 
-    const indicators = ['teacher-time-indicator','parent-time-indicator'];
-    indicators.forEach(id => {
+  <script>
+    // ── State
+    let currentRole = null;
+    let isWorkingHours = true;
+
+    function checkWorkingHours() {
+      const now = new Date();
+      const h = now.getHours();
+      const d = now.getDay();
+      isWorkingHours = d >= 1 && d <= 5 && h >= 9 && h < 18;
+
+      const indicators = ['teacher-time-indicator', 'parent-time-indicator'];
+      indicators.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (isWorkingHours) {
+          el.className = 'time-indicator open';
+          el.innerHTML = '<span class="time-dot"></span>연락 가능';
+        } else {
+          el.className = 'time-indicator closed';
+          el.innerHTML = '<span class="time-dot"></span>근무 외 시간';
+        }
+      });
+
+      const warn = document.getElementById('complaint-time-warning');
+      if (warn) warn.style.display = isWorkingHours ? 'none' : 'flex';
+
+      const callBtn = document.getElementById('call-btn-main');
+      if (callBtn) callBtn.disabled = !isWorkingHours;
+    }
+
+    // ── Navigation
+    function enterRole(role) {
+      currentRole = role;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + role).classList.add('active');
+      checkWorkingHours();
+    }
+
+    function goHome() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-landing').classList.add('active');
+      currentRole = null;
+    }
+
+    // ── Tab switching
+    function switchTab(role, panel) {
+      const tabBar = document.getElementById(role + '-tabs');
+      const panels = document.querySelectorAll(`#screen-${role} .tab-panel`);
+      const panelEl = document.getElementById(`${role}-${panel}`);
+
+      if (!tabBar || !panelEl) return;
+
+      tabBar.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      panelEl.classList.add('active');
+
+      const tabMap = role === 'teacher'
+        ? ['dashboard', 'complaints', 'notices', 'absences']
+        : ['home', 'complaint', 'absence', 'notices', 'call'];
+      const idx = tabMap.indexOf(panel);
+      const tabs = tabBar.querySelectorAll('.tab');
+      if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
+    }
+
+    // ── Modals
+    function openCategoryModal() {
+      document.getElementById('modal-category').classList.add('open');
+    }
+    function openNoticeUploadModal() {
+      document.getElementById('modal-notice-upload').classList.add('open');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(m => {
+      m.addEventListener('click', function (e) {
+        if (e.target === this) this.classList.remove('open');
+      });
+    });
+
+    // ── Category select
+    function selectCategory(el) {
+      document.querySelectorAll('.category-select-item').forEach(i => i.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    // ── Actions
+    function filterCategory(el, cat) {
+      document.querySelectorAll('#teacher-complaints .chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function showComplaintDetail(role) {
+      showToast('민원 상세보기 (데모 화면)');
+    }
+
+    function goComplaintStep(step) {
+      [1, 2, 3].forEach(n => {
+        const card = document.getElementById('complaint-step-' + n);
+        const indicator = document.getElementById('complaint-step-indicator-' + n);
+        if (card) {
+          card.classList.toggle('active', n === step);
+          card.classList.toggle('locked', n > step);
+        }
+        if (indicator) {
+          indicator.className = 'step ' + (n < step ? 'done' : n === step ? 'current' : 'pending');
+        }
+      });
+      const line1 = document.getElementById('complaint-step-line-1');
+      const line2 = document.getElementById('complaint-step-line-2');
+      if (line1) line1.classList.toggle('done', step >= 2);
+      if (line2) line2.classList.toggle('done', step >= 3);
+    }
+
+    function validateComplaintContent() {
+      const type = document.getElementById('complaint-type')?.value;
+      const title = document.getElementById('complaint-title-input')?.value.trim();
+      const body = document.getElementById('complaint-body-input')?.value.trim();
+      if (!type || !title || !body) {
+        showToast('⚠️ 민원 유형, 제목, 내용을 모두 입력해 주세요');
+        return;
+      }
+      goComplaintStep(3);
+    }
+
+    function markFileAttached(id, text) {
       const el = document.getElementById(id);
-      if (!el) return;
-      if (isWorkingHours) {
-        el.className = 'time-indicator open';
-        el.innerHTML = '<span class="time-dot"></span>연락 가능';
-      } else {
-        el.className = 'time-indicator closed';
-        el.innerHTML = '<span class="time-dot"></span>근무 외 시간';
+      if (el) el.textContent = text;
+    }
+
+    function submitComplaint() {
+      const checks = ['agree1', 'agree2', 'agree3'].map(id => document.getElementById(id)?.checked);
+      if (!checks.every(Boolean)) {
+        showToast('⚠️ 모든 책임 동의 항목에 체크해 주세요');
+        return;
       }
-    });
+      if (!isWorkingHours) {
+        showToast('⚠️ 근무시간(09:00~18:00)에만 제출 가능합니다');
+        return;
+      }
+      closeModal('modal-category');
+      showToast('✅ 민원이 성공적으로 접수되었습니다');
+    }
 
-    const warn = document.getElementById('complaint-time-warning');
-    if (warn) warn.style.display = isWorkingHours ? 'none' : 'flex';
+    function submitAbsence() {
+      if (!document.getElementById('abs-agree')?.checked) {
+        showToast('⚠️ 동의 항목에 체크해 주세요');
+        return;
+      }
+      showToast('✅ 결석 사유서가 제출되었습니다');
+    }
 
-    const callBtn = document.getElementById('call-btn-main');
-    if (callBtn) callBtn.disabled = !isWorkingHours;
-  }
+    function saveCategory() {
+      closeModal('modal-category');
+      showToast('✅ 카테고리가 분류되었습니다');
+    }
 
-  // ── Navigation
-  function enterRole(role) {
-    currentRole = role;
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + role).classList.add('active');
+    function uploadNotice() {
+      closeModal('modal-notice-upload');
+      showToast('✅ 가정통신문이 발송되었습니다');
+    }
+
+    function initiateCall() {
+      if (!isWorkingHours) {
+        showToast('⚠️ 근무시간(09:00~18:00)에만 통화 가능합니다');
+        return;
+      }
+      showToast('📞 안심전화 연결 중... (데모)');
+    }
+
+    // ── Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(80px)';
+      }, 2800);
+    }
+
+    // Init
+    const complaintTypeSelect = document.getElementById('complaint-type');
+    if (complaintTypeSelect) complaintTypeSelect.selectedIndex = 1;
     checkWorkingHours();
-  }
-
-  function goHome() {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-landing').classList.add('active');
-    currentRole = null;
-  }
-
-  // ── Tab switching
-  function switchTab(role, panel) {
-    const tabBar = document.getElementById(role + '-tabs');
-    const panels = document.querySelectorAll(`#screen-${role} .tab-panel`);
-    const panelEl = document.getElementById(`${role}-${panel}`);
-
-    if (!tabBar || !panelEl) return;
-
-    tabBar.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    panels.forEach(p => p.classList.remove('active'));
-    panelEl.classList.add('active');
-
-    const tabMap = role === 'teacher'
-      ? ['dashboard', 'complaints', 'notices', 'absences']
-      : ['home', 'complaint', 'absence', 'notices', 'call'];
-    const idx = tabMap.indexOf(panel);
-    const tabs = tabBar.querySelectorAll('.tab');
-    if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
-  }
-
-  // ── Modals
-  function openCategoryModal() {
-    document.getElementById('modal-category').classList.add('open');
-  }
-  function openNoticeUploadModal() {
-    document.getElementById('modal-notice-upload').classList.add('open');
-  }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-  }
-  document.querySelectorAll('.modal-backdrop').forEach(m => {
-    m.addEventListener('click', function(e) {
-      if (e.target === this) this.classList.remove('open');
-    });
-  });
-
-  // ── Category select
-  function selectCategory(el) {
-    document.querySelectorAll('.category-select-item').forEach(i => i.classList.remove('selected'));
-    el.classList.add('selected');
-  }
-
-  // ── Actions
-  function filterCategory(el, cat) {
-    document.querySelectorAll('#teacher-complaints .chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  function showComplaintDetail(role) {
-    showToast('민원 상세보기 (데모 화면)');
-  }
-
-  function goComplaintStep(step) {
-    [1,2,3].forEach(n => {
-      const card = document.getElementById('complaint-step-' + n);
-      const indicator = document.getElementById('complaint-step-indicator-' + n);
-      if (card) {
-        card.classList.toggle('active', n === step);
-        card.classList.toggle('locked', n > step);
-      }
-      if (indicator) {
-        indicator.className = 'step ' + (n < step ? 'done' : n === step ? 'current' : 'pending');
-      }
-    });
-    const line1 = document.getElementById('complaint-step-line-1');
-    const line2 = document.getElementById('complaint-step-line-2');
-    if (line1) line1.classList.toggle('done', step >= 2);
-    if (line2) line2.classList.toggle('done', step >= 3);
-  }
-
-  function validateComplaintContent() {
-    const type = document.getElementById('complaint-type')?.value;
-    const title = document.getElementById('complaint-title-input')?.value.trim();
-    const body = document.getElementById('complaint-body-input')?.value.trim();
-    if (!type || !title || !body) {
-      showToast('⚠️ 민원 유형, 제목, 내용을 모두 입력해 주세요');
-      return;
-    }
-    goComplaintStep(3);
-  }
-
-  function markFileAttached(id, text) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-  }
-
-  function submitComplaint() {
-    const checks = ['agree1','agree2','agree3'].map(id => document.getElementById(id)?.checked);
-    if (!checks.every(Boolean)) {
-      showToast('⚠️ 모든 책임 동의 항목에 체크해 주세요');
-      return;
-    }
-    if (!isWorkingHours) {
-      showToast('⚠️ 근무시간(09:00~18:00)에만 제출 가능합니다');
-      return;
-    }
-    closeModal('modal-category');
-    showToast('✅ 민원이 성공적으로 접수되었습니다');
-  }
-
-  function submitAbsence() {
-    if (!document.getElementById('abs-agree')?.checked) {
-      showToast('⚠️ 동의 항목에 체크해 주세요');
-      return;
-    }
-    showToast('✅ 결석 사유서가 제출되었습니다');
-  }
-
-  function saveCategory() {
-    closeModal('modal-category');
-    showToast('✅ 카테고리가 분류되었습니다');
-  }
-
-  function uploadNotice() {
-    closeModal('modal-notice-upload');
-    showToast('✅ 가정통신문이 발송되었습니다');
-  }
-
-  function initiateCall() {
-    if (!isWorkingHours) {
-      showToast('⚠️ 근무시간(09:00~18:00)에만 통화 가능합니다');
-      return;
-    }
-    showToast('📞 안심전화 연결 중... (데모)');
-  }
-
-  // ── Toast
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.opacity = '1';
-    t.style.transform = 'translateX(-50%) translateY(0)';
-    setTimeout(() => {
-      t.style.opacity = '0';
-      t.style.transform = 'translateX(-50%) translateY(80px)';
-    }, 2800);
-  }
-
-  // Init
-  const complaintTypeSelect = document.getElementById('complaint-type');
-  if (complaintTypeSelect) complaintTypeSelect.selectedIndex = 1;
-  checkWorkingHours();
-  setInterval(checkWorkingHours, 60000);
-</script>
+    setInterval(checkWorkingHours, 60000);
+  </script>
 </body>
+
 </html>
